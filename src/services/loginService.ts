@@ -8,26 +8,7 @@ export default class LoginService {
     }
     
     async login(link: string): Promise<void> {
-        console.log(link)
-
-        const options = {
-            method: 'POST',
-            url: 'http://localhost:3000/login',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            data: {
-                link: link,
-            },
-        };
-
-        axios.post(options)
-            .then((response) => {
-                console.log(response);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        console.log('Logging in...', link);
     }
 
     get isLoggedIn(): boolean {

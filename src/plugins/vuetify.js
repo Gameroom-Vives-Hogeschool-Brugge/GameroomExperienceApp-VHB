@@ -10,6 +10,6 @@ export default createVuetify({
     sets: {
       mdi,
     },
-  },
+  }, 
   ssr: true,
 })

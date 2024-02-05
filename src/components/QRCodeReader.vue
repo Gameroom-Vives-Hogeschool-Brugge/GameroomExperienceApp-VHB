@@ -13,8 +13,7 @@
 import { RouterLink} from 'vue-router'
 import { StreamBarcodeReader } from "vue-barcode-reader";
 import { useRouter } from 'vue-router'
-//eslint-disable-next-line
-import LoginService from '../services/LoginService'
+import LoginService from '../services/loginService'
 
 const router = useRouter()
 const loginService = new LoginService()

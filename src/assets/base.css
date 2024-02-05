@@ -84,3 +84,82 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+body {
+  background-color: #FFFFFF !important;
+}
+
+.primary-color {
+  background-color: #E00020 !important;
+  color: #FFFFFF !important;
+}
+
+.primary-color-btn {
+  background-color: #E00020 !important;
+  color: #FFFFFF !important;
+}
+
+.primary-color-btn:hover {
+  background-color: #C4001C !important;
+}
+
+.secondary-color {
+  background-color: #DDD !important;
+  color: #333 !important;
+}
+
+.secondary-color-btn {
+  background-color: #1E1E1E  !important;
+  color: #FFFFFF !important;
+}
+
+.secondary-color-btn:hover {
+  background-color: #4A4A4A !important;
+}
+
+.tertiary-color {
+  background-color: #FFFFFF !important;
+  color:  #1E1E1E !important;
+}
+
+.tertiary-color-btn {
+  background-color: #FFFFFF !important;
+  color: #1E1E1E !important;
+  border: #1E1E1E !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+
+.tertiary-color-btn:hover {
+  background-color: #FFFFFF !important;
+  color: #1E1E1E !important;
+  border: #1E1E1E !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+
+.message, h2, p, title {
+  color: #1D1D1B !important;
+}
+
+input, select {
+  background-color: #EFEEE9 !important;
+  color: #A0A09F !important;
+  padding: 8px !important;
+  margin: 5px 0 !important;
+  border: 1px solid #DDD !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+input:hover, select:hover {
+  background-color: #E2E0D9 !important;
+}
+
+h1 {
+  font-weight: bold !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #1D1D1B !important;
+}
