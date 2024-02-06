@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
+import NavBarComponentVue from './components/navbarComponent/NavBarComponent.vue'
 
 // Router
 import router from './router'
@@ -25,5 +26,6 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.component("NavBarCompnent", NavBarComponentVue)
 
 app.mount('#app')
