@@ -34,3 +34,6 @@ Dockerfile
 
 #environments
 env.d.ts
+
+#database
+src/assets/databases/*
