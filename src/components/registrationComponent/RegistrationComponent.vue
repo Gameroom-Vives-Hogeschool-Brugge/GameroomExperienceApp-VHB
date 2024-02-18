@@ -57,8 +57,14 @@ export default {
         },
         async register() {
             this.loading = true;
-            this.RegService.registerPerson(this.student);
-            this.loading = false; 
+            const succes = this.RegService.registerPerson(this.student);
+            this.loading = false;
+            if (succes) {
+                console.log('Succesfully registered');
+            } else {
+                console.log('Failed to register');
+            }
+            this.$router.push('/home');
         }
     },
 }
