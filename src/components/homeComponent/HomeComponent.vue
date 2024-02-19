@@ -1,6 +1,7 @@
 <script lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useActiveUserStore } from '@/stores/activeUserStore';
 
 export default {
   name: 'HomeComponent',
@@ -8,6 +9,7 @@ export default {
     const dialog = ref(false);
     const extra = ref(false);
     const router = useRouter();
+    const activeUserStore = useActiveUserStore();
 
     const navigateToQrCodeReader = () => {
       router.push("/QrcodeReader");
@@ -16,7 +18,8 @@ export default {
     return {
       dialog,
       navigateToQrCodeReader,
-      extra
+      extra,
+      activeUserStore
     };
   }
 }

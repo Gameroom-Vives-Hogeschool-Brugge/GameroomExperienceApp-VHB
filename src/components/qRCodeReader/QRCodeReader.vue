@@ -21,6 +21,7 @@
 import { useRouter } from 'vue-router'
 import LoginService from '../../services/loginService'
 import { QrcodeStream } from 'vue-qrcode-reader'
+import { useActiveUserStore } from '@/stores/activeUserStore'
 
 export default {
     name: 'QRCodeReader',
@@ -30,10 +31,12 @@ export default {
     setup() {
         const loginService: LoginService = new LoginService();
         const router = useRouter()
+        const activeUserStore = useActiveUserStore();
 
         return {
             loginService,
-            router
+            router,
+            activeUserStore
         }
     },
     data() {
@@ -44,39 +47,28 @@ export default {
     methods: {
         async onDetect(detectedObject: Object) {
             const Text = (detectedObject as any[])[0].rawValue;
-            console.log(Text)
             this.loading = true;
             const response = await this.loginService.login(Text)
             this.loading = false;
 
-            if (response.responseCode === 299) {
+            if (response === 299) {
                 console.log("Student Kortrijk")
-                const cardnumber = response.data
-                this.router.push("/Registration")
-
                 //naar registratiepagina
-            } else if (response.responseCode === 298){
+                this.router.push("/Registration") 
+            } else if (response === 298){
                 console.log("Prof")
-                console.log(response.data)
-
                 //naar registratiepagina
                 this.router.push("/Registration")
-            } else if (response.responseCode === 297){
+            } else if (response === 297){
                 console.log("Logged In")
-                console.log(response.data)
-
                 //naar personalPagepagina
                 this.router.push("/PersonalPage")
-            } else if (response.responseCode === 401) {
+            } else if (response === 401) {
                 console.log("Not a Valid Student or Prof")
-                console.log(response.data)
-
                 //naar homepagina
                 this.router.push('/home')
             } else {
                 console.log("Card not found or invalid cardnumber")
-                console.log(response.data)
-
                 //naar homepagina
                 this.router.push('/home')
             }

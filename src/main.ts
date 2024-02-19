@@ -1,7 +1,6 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import NavBarComponentVue from './components/navbarComponent/NavBarComponent.vue'
@@ -20,12 +19,34 @@ const vuetify = createVuetify({
   directives,
 })
 
+//pinia
+import { createPinia } from 'pinia'
+const pinia = createPinia()
+
+
+//pinia-plugin-persistedState
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
+pinia.use(piniaPluginPersistedstate)
+
 // App
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
 app.use(vuetify)
+app.use(pinia)
 app.component("NavBarCompnent", NavBarComponentVue)
 
 app.mount('#app')
+
+//Scripts
+/*import { useActiveUserStore } from './stores/activeUserStore';
+const activeUserStore = useActiveUserStore();
+
+// Verify Userauthentication before routing to other pages
+router.beforeEach((to) => {
+  if (!activeUserStore.activeUserSelected && to.name !== 'Home') {
+    return { name: 'Home' }
+  }
+}) */

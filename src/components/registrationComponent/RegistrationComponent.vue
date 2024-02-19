@@ -51,7 +51,7 @@
         opnieuw te proberen.
       </v-card-text>
       <v-card-actions>
-        <v-btn id="close-btn" @click="router.push('/')" color="btn secondary-color-btn"
+        <v-btn id="close-btn" @click="navigateTo('HomeComponent')" color="btn secondary-color-btn"
           >Terug naar het beginscherm</v-btn
         >
       </v-card-actions>
@@ -62,6 +62,7 @@
 <script lang="ts">
 import { useRouter } from 'vue-router'
 import registrationService from '@/services/registrationService'
+import { useActiveUserStore } from '@/stores/activeUserStore'
 
 interface RegisteredPerson {
   firstName: string
@@ -73,11 +74,13 @@ export default {
   components: {},
   setup() {
     const RegService: registrationService = new registrationService()
+    const activeUserStore = useActiveUserStore()
     const router = useRouter()
 
     return {
       RegService,
-      router
+      router,
+      activeUserStore
     }
   },
   data() {
@@ -119,7 +122,21 @@ export default {
       } else {
         this.error = true
       }
-    }
+    },
+    navigateTo (route: string) {
+        if (route == "HomeComponent") {
+            this.activeUserStore.activeUser = {
+                id: null,
+                firstName: null,
+                lastName: null,
+                type: null,
+                role: null
+            };
+            this.activeUserStore.temporaryCardNumber = "";
+            this.activeUserStore.activeUserSelected = false;
+            this.router.push("/home");
+        }
+      } 
   }
 }
 </script>

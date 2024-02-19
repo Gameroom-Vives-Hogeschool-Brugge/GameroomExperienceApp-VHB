@@ -1,36 +1,34 @@
-import axios from 'axios';
-interface LoginResponse {
-    responseCode: number;
-    data: string | undefined;
-}
+import type { ActiveUser } from '@/models/activeUser'
+import axios from 'axios'
+import { useActiveUserStore} from '@/stores/activeUserStore'
+import type { PiniaStore } from '@/stores/activeUserStore'
 
 export default class LoginService {
-    loggedIn: boolean;
-    apiLink: string;
+  apiLink: string
+  activeUserStore: PiniaStore<typeof useActiveUserStore>
 
-    constructor() {
-        this.loggedIn = false;
-        this.apiLink = "http://localhost:3000/login";
-    }
-    
-    async login(link: string): Promise<LoginResponse> {
-        const response = await axios.post(this.apiLink, 
-            {
-                link: link
-            }, 
-            {
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
+  constructor() {
+    this.apiLink = 'http://localhost:3000/login'
+    this.activeUserStore = useActiveUserStore();
+  }
 
-        return {
-            responseCode: response.status,
-            data: response.data
-        }
+  async login(link: string): Promise<number> {
+    const response = await axios.post(
+      this.apiLink,
+      { link: link },
+      { headers: { 'Content-Type': 'application/json'}}
+    )
+
+    if (response.status === 297) {
+      const activeUser = response.data as ActiveUser
+      this.activeUserStore.setActiveUser(activeUser)
+
+      const cardNumber = link.split("/").pop();
+      this.activeUserStore.setTemporaryCardNumber(cardNumber)
+      
+      this.activeUserStore.activeUserSelected = true
     }
 
-    get isLoggedIn(): boolean {
-        return this.loggedIn;
-    }
+    return response.status
+  }
 }

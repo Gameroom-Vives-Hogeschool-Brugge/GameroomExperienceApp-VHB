@@ -1,8 +1,7 @@
 <script lang="ts">
-import type { get } from 'http';
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import NavBarComponent from '../navbarComponent/NavBarComponent.vue';
+import { useActiveUserStore } from '@/stores/activeUserStore';
 
 export default {
   name: 'PersonalPageComponent',
@@ -11,9 +10,19 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const activeUserStore = useActiveUserStore();
 
     const navigateTo = (route: string) => {
         if (route == "HomeComponent") {
+            activeUserStore.activeUser = {
+                id: null,
+                firstName: null,
+                lastName: null,
+                type: null,
+                role: null
+            };
+            activeUserStore.temporaryCardNumber = "";
+            activeUserStore.activeUserSelected = false;
             router.push("/home");
         } else if (route == "CheckInComponent") {
             router.push("/checkin");
@@ -27,7 +36,8 @@ export default {
     };
 
     return {
-      navigateTo
+      navigateTo,
+      activeUserStore
     };
   }
 }
