@@ -23,11 +23,9 @@
     "jest-mock": "^29.7.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
-    "vue-barcode-reader": "^1.0.3",
+    "vue-qrcode-reader": "^5.5.3",
     "vue-router": "^4.2.5",
     "vue-router-mock": "^1.0.0",
-    "vue3-qr-reader": "^1.0.0",
-    "vue3-qrcode-reader": "^0.0.1",
     "vuetify": "^3.5.2"
   },
   "devDependencies": {

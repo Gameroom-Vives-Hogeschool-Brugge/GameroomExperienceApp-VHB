@@ -17,11 +17,13 @@ export default class RegistrationService {
     }
 
     async registerPerson(person: RegistrationPerson | null): Promise<Boolean> {
-        const response = await axios.post("http://localhost:3000/registrations", person, {
+        const response = await axios.post("http://localhost:3000/registrations", {
+            person: person
+        }, {
             headers: {
                 "Content-Type": "application/json",
             },
-        });
+        })
 
         if (response.status !== 201) {
             return false;   

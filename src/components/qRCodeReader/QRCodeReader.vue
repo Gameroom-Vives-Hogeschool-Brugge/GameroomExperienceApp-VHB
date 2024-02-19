@@ -1,27 +1,31 @@
 <template>
-    <div v-if="!loading">
-        <StreamBarcodeReader
-        @decode="onDecode"
-        @onLoad="onLoaded"
-        style="width: 1000px; height: 1000px;"
-        ></StreamBarcodeReader>
+    <div class="container">
+        <div class="container1">
+            <div class="buttonContainer">
+                <v-btn id="back-btn" color="btn primary-color-btn" @click="router.push('/')">Terug</v-btn>
+            </div>
+            <div class="title">
+                <h2>Gelieve uw QR code te scannen op de achterkant van uw kaart.</h2>
+            </div>
+        </div>
+        <div class="container2">
+            <qrcode-stream @detect="onDetect"></qrcode-stream>          
+        </div>
     </div>
     <v-overlay v-model="loading">
         <v-progress-circular indeterminate color="#E00020" bg-color="#DDD"></v-progress-circular>
     </v-overlay>
-    <RouterLink to="/" v-if="!loading">Terug</RouterLink>  
 </template>
 
 <script lang="ts">
-import { RouterLink} from 'vue-router'
-import { StreamBarcodeReader } from "vue-barcode-reader";
 import { useRouter } from 'vue-router'
-import LoginService from '../services/loginService'
+import LoginService from '../../services/loginService'
+import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
     name: 'QRCodeReader',
     components: {
-        StreamBarcodeReader
+        QrcodeStream
     },
     setup() {
         const loginService: LoginService = new LoginService();
@@ -34,11 +38,13 @@ export default {
     },
     data() {
         return {
-            loading: false
+            loading: false,
         }
     },
     methods: {
-        async onDecode(Text: string) {
+        async onDetect(detectedObject: Object) {
+            const Text = (detectedObject as any[])[0].rawValue;
+            console.log(Text)
             this.loading = true;
             const response = await this.loginService.login(Text)
             this.loading = false;
@@ -77,7 +83,58 @@ export default {
         },
         onLoaded() {
         }
-    }
+  },
+  onUnmounted() {
+    console.log("unmounted");
+  }
 }
 
 </script>
+
+<style scoped>
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px;
+    max-height: 20%;
+    width: 100%;
+}
+
+.buttonContainer {
+    display: flex;
+    align-self: center;
+    margin-bottom: 50px;
+}
+
+.title {
+    display: flex;
+    align-self: center;
+    min-width: 300px;
+    max-width: 80%;
+
+}
+
+.container2 {
+    min-width: 300px;
+    max-height: 80%;
+    width: 80vw;
+}
+
+
+
+#back-btn {
+    width: 80%;
+    min-width: 250px;
+    height: 50px;
+}
+</style>
