@@ -4,6 +4,8 @@ import QRCodeReader from '../components/qRCodeReader/QRCodeReader.vue'
 import PersonalPageComponent from '../components//personalPageComponent/PersonalPageComponent.vue'
 import MyReservationComponent from '@/components/myReservationsComponent/MyReservationComponent.vue'
 import RegistrationComponent from '@/components/registrationComponent/RegistrationComponent.vue'
+import NewReservationComponent from '@/components/newReservationComponent/NewReservationComponent.vue'
+import RoomsComponent from '@/components/roomsComponent/RoomsComponent.vue' 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,7 +18,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeComponent
+      component: HomeComponent,
+      
     },
     {
       path:"/QrcodeReader",
@@ -37,7 +40,18 @@ const router = createRouter({
       path:"/Registration",
       name:"RegistrationComponent",
       component: RegistrationComponent
+    },
+    {
+      path:"/NewReservation",
+      name:"NewReservationComponent",
+      component: NewReservationComponent
+    },
+    {
+      path:"/Rooms",
+      name:"RoomsComponent",
+      component: RoomsComponent
     }
+
   ]
 })
 

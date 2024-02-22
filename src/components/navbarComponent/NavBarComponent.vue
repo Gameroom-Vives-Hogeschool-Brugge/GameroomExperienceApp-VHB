@@ -12,13 +12,13 @@ export default {
   name: 'NavBarComponent',
   setup() {
     const activeUserStore = useActiveUserStore();
-    const activeUser: ActiveUser = activeUserStore.activeUser;
+    const activeUser: ActiveUser = activeUserStore.getActiveUser();
 
     return {
         activeUserStore,
         activeUser
     };
-  },
+  }
 }
 
 

@@ -1,5 +1,4 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 
 import App from './App.vue'
@@ -26,7 +25,6 @@ const pinia = createPinia()
 
 //pinia-plugin-persistedState
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-
 pinia.use(piniaPluginPersistedstate)
 
 // App
@@ -41,12 +39,23 @@ app.component("NavBarCompnent", NavBarComponentVue)
 app.mount('#app')
 
 //Scripts
-/*import { useActiveUserStore } from './stores/activeUserStore';
+import { useActiveUserStore } from './stores/activeUserStore'
 const activeUserStore = useActiveUserStore();
 
 // Verify Userauthentication before routing to other pages
 router.beforeEach((to) => {
-  if (!activeUserStore.activeUserSelected && to.name !== 'Home') {
-    return { name: 'Home' }
+  if (to.name === 'home') {
+    activeUserStore.logOut()
   }
-}) */
+
+  if (to.name === 'RegistrationComponent' && ( activeUserStore.getTemporaryCardNumber() === "" || activeUserStore.getActiveUserSelected())){
+    return { name: 'home' }
+  }
+
+  if (to.name !== 'QrcodeReader' && to.name !== 'home' && to.name !== 'RegistrationComponent') {
+    if (!activeUserStore.getActiveUserSelected()) {
+      console.log("No Active User")
+      return { name: 'home' }
+    }
+  }
+})

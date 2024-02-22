@@ -1,4 +1,5 @@
 <template>
+  <NavbarComponent />
   <div class="container">
     <div class="container1">
       <h1>Kies uw naam uit de lijst</h1>
@@ -63,6 +64,7 @@
 import { useRouter } from 'vue-router'
 import registrationService from '@/services/registrationService'
 import { useActiveUserStore } from '@/stores/activeUserStore'
+import NavbarComponent from '@/components/navbarComponent/NavBarComponent.vue'
 
 interface RegisteredPerson {
   firstName: string
@@ -71,7 +73,9 @@ interface RegisteredPerson {
 
 export default {
   name: 'RegistrationComponent',
-  components: {},
+  components: {
+    NavbarComponent
+  },
   setup() {
     const RegService: registrationService = new registrationService()
     const activeUserStore = useActiveUserStore()
@@ -125,15 +129,15 @@ export default {
     },
     navigateTo (route: string) {
         if (route == "HomeComponent") {
-            this.activeUserStore.activeUser = {
+            this.activeUserStore.setActiveUser({
                 id: null,
                 firstName: null,
                 lastName: null,
                 type: null,
                 role: null
-            };
-            this.activeUserStore.temporaryCardNumber = "";
-            this.activeUserStore.activeUserSelected = false;
+            });
+            this.activeUserStore.setTemporaryCardNumber("");
+            this.activeUserStore.setActiveUserSelected(false);
             this.router.push("/home");
         }
       } 

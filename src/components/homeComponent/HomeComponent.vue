@@ -1,30 +1,3 @@
-<script lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useActiveUserStore } from '@/stores/activeUserStore';
-
-export default {
-  name: 'HomeComponent',
-  setup() {
-    const dialog = ref(false);
-    const extra = ref(false);
-    const router = useRouter();
-    const activeUserStore = useActiveUserStore();
-
-    const navigateToQrCodeReader = () => {
-      router.push("/QrcodeReader");
-    };
-
-    return {
-      dialog,
-      navigateToQrCodeReader,
-      extra,
-      activeUserStore
-    };
-  }
-}
-</script>
-
 <template>
   <div class="top-left-image-container">
     <img alt="Vives Hogeschool Logo" src="../../assets/images/VivesHogeschool.png" />
@@ -53,6 +26,33 @@ export default {
   </div>
 
 </template>
+
+<script lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useActiveUserStore } from '@/stores/activeUserStore';
+
+export default {
+  name: 'HomeComponent',
+  setup() {
+    const dialog = ref(false);
+    const extra = ref(false);
+    const router = useRouter();
+    const activeUserStore = useActiveUserStore();
+
+    const navigateToQrCodeReader = () => {
+      router.push("/QrcodeReader");
+    };
+
+    return {
+      dialog,
+      navigateToQrCodeReader,
+      extra,
+      activeUserStore
+    };
+  }
+}
+</script>
 
 <style scoped>
 

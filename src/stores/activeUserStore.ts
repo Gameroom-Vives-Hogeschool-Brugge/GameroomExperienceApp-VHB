@@ -1,89 +1,80 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import type { ActiveUser } from '@/models/activeUser'
 
+export const useActiveUserStore = defineStore('activeUserStore', () => {
+  const activeUser = ref({} as ActiveUser)
+  const activeUserSelected = ref(<Boolean>false)
+  const temporaryCardNumber = ref<string | undefined>('')
 
-export const useActiveUserStore =  defineStore("activeUserStore", {
-    state: () => {
-        return {
-            activeUser: {} as ActiveUser,
-            activeUserSelected: false as Boolean,
-            temporaryCardNumber: "" as string | undefined
-        }
-    },
-    actions : {
-        //set the active user
-        setActiveUser(activeUser: ActiveUser) : Boolean {
-            this.activeUser = activeUser
-            this.activeUserSelected = true
-            return true
-        },
-        //set the temporary card number
-        setTemporaryCardNumber(cardNumber: string | undefined) : void {
-            this.temporaryCardNumber = cardNumber
-        },
-        //get the active user
-        getActiveUser() : ActiveUser | Boolean{
-            if (this.activeUserSelected) {
-                return this.activeUser          
-            } else {
-                return false
-            }
-        },
-        //get the temporary card number
-        getTemporaryCardNumber() : string | undefined {
-            return this.temporaryCardNumber
-        },
-        //get the active user's username
-        getActiveUserid() : string | null | Boolean{
-            if (this.activeUserSelected) {
-                return this.activeUser.id
-            } else {
-                return false
-            }
-        },
-        //get the active user's role
-        getActiveUserRole() : string | Boolean | null{
-            if (this.activeUserSelected) {
-                return this.activeUser.role
-            } else {
-                return false
-            }
-        },
-        //return true if an active user is selected
-        getActiveUserSelected() : Boolean {
-            return this.activeUserSelected
-        },
-        // reset the active user
-        resetActiveUser() : void {
-            this.activeUser = {
-                id: null,
-                firstName: null,
-                lastName: null,
-                type: null,
-                role: null
-            }
-        },
-        resetUserSelected() : void {
-            this.activeUserSelected = false
-        },
-        //reset temporary card number
-        resetTemporaryCardNumber() : void {
-            this.temporaryCardNumber = ""
-        },
-        //logout the active user, delete the api key, delete the geolocation api key and set activeUserSelected boolean to false
-        logout() : void {
-            this.resetActiveUser()
-            this.resetUserSelected()
-            this.resetTemporaryCardNumber()
-        }
-    },
-    //persist the active user and active user selected boolean for use on page refresh
-    persist: {
-        paths: ["activeUser", "activeUserSelected"]
-    },
+  function setActiveUser(newActiveUser: ActiveUser): Boolean {
+    activeUser.value = newActiveUser
+    activeUserSelected.value = true
+    return true
+  }
+  function setTemporaryCardNumber(cardNumber: string | undefined): void {
+    temporaryCardNumber.value = cardNumber
+  }
+
+  function setActiveUserSelected(isActiveUser: Boolean): void {
+    activeUserSelected.value = isActiveUser
+  }
+
+  function getActiveUser(): ActiveUser {
+      return activeUser.value
+  }
+  
+  function getTemporaryCardNumber(): string | undefined {
+    return temporaryCardNumber.value
+  }
+
+  function getActiveUserid(): string | null | Boolean {
+    if (activeUserSelected.value) {
+      return activeUser.value.id
+    } else {
+      return false
+    }
+  }
+
+  function getActiveUserSelected(): Boolean {
+    return activeUserSelected.value
+  }
+
+  function resetActiveUser(): void {
+    activeUser.value = {} as ActiveUser
+  }
+
+  function resetTemporaryCardNumber(): void {
+    temporaryCardNumber.value = ''
+  }
+
+  function resetActiveUserSelected(): void {
+    activeUserSelected.value = false
+  }
+
+  function logOut(): void {
+    activeUser.value = {} as ActiveUser
+    activeUserSelected.value = false
+    temporaryCardNumber.value = ''
+  }
+
+  return {
+    activeUser,
+    activeUserSelected,
+    temporaryCardNumber,
+    setActiveUser,
+    setTemporaryCardNumber,
+    getActiveUser,
+    getTemporaryCardNumber,
+    getActiveUserid,
+    logOut,
+    getActiveUserSelected,
+    resetActiveUser,
+    resetTemporaryCardNumber,
+    resetActiveUserSelected,
+    setActiveUserSelected
+  }  
+},{
+  persist: true,
+  
 })
-
-export type PiniaStore<T extends (...args: any) => any> = Omit<
-  ReturnType<T>,
-  keyof ReturnType<typeof defineStore>
->;

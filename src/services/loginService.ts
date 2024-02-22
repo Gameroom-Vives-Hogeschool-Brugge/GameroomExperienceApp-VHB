@@ -1,11 +1,10 @@
 import type { ActiveUser } from '@/models/activeUser'
 import axios from 'axios'
 import { useActiveUserStore} from '@/stores/activeUserStore'
-import type { PiniaStore } from '@/stores/activeUserStore'
 
 export default class LoginService {
   apiLink: string
-  activeUserStore: PiniaStore<typeof useActiveUserStore>
+  activeUserStore: ReturnType<typeof useActiveUserStore>
 
   constructor() {
     this.apiLink = 'http://localhost:3000/login'
