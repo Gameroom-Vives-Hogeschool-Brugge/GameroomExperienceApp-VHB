@@ -4,7 +4,7 @@ import { useActiveUserStore } from "@/stores/activeUserStore";
 
 export default class RegistrationService {
     constructor() {
-        const activeUserStore = useActiveUserStore();
+        this.activeUserStore = useActiveUserStore();
     }
 
     async getRegistrations(): Promise<RegistrationPerson[]> {
@@ -19,15 +19,17 @@ export default class RegistrationService {
     }
 
     async registerPerson(person: RegistrationPerson | null): Promise<Boolean> {
-        const response = await axios.post("http://localhost:3000/registrations", {
-            person: person
+        const response = await axios.post("http://localhost:3000/registrations", 
+        {
+            person: person,
+            cardNumber: this.activeUserStore.getTemporaryCardNumber(),
+            role: "Student",
+            type: "Student"
         }, {
             headers: {
                 "Content-Type": "application/json",
             },
         })
-
-        console.log(response)
 
         if (response.status !== 201) {
             return false;   

@@ -47,6 +47,8 @@ export default {
     methods: {
         async onDetect(detectedObject: Object) {
             const Text = (detectedObject as any[])[0].rawValue;
+            const cardNumber = Text.split("/").pop();
+            this.activeUserStore.setTemporaryCardNumber(cardNumber);
             this.loading = true;
             const response = await this.loginService.login(Text)
             this.loading = false;
@@ -63,6 +65,10 @@ export default {
                 console.log("Logged In")
                 //naar personalPagepagina
                 this.router.push("/PersonalPage")
+            } else if (response === 296) {
+                console.log("Not verified yet.")
+                // naar homepagina
+                this.router.push("/home")
             } else if (response === 401) {
                 console.log("Not a Valid Student or Prof")
                 //naar homepagina

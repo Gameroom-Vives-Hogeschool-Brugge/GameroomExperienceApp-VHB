@@ -15,7 +15,7 @@
             :item-props="registeredPersonsProps"
             :rules="rules"
           ></v-select>
-          <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Vestuur email</v-btn>
+          <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Verstuur email</v-btn>
         </v-form>
       </v-sheet>
     </div>

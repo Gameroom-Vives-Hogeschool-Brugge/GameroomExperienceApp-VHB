@@ -41,7 +41,7 @@
       >
       <v-btn
         id="routeToRoomComponent"
-        @click="navigateTo('RoomComponent')"
+        @click="navigateTo('RoomsComponent')"
         class="btn secondary-color-btn"
         >Tijdsschema Lokaal</v-btn
       >

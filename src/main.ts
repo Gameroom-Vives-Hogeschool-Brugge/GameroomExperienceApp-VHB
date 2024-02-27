@@ -48,7 +48,9 @@ router.beforeEach((to) => {
     activeUserStore.logOut()
   }
 
+  // If the user is not logged in and tries to access a page that requires authentication, redirect to the home page
   if (to.name === 'RegistrationComponent' && ( activeUserStore.getTemporaryCardNumber() === "" || activeUserStore.getActiveUserSelected())){
+    console.log("REDIRECTED")
     return { name: 'home' }
   }
 
