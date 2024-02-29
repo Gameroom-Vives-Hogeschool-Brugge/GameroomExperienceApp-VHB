@@ -22,5 +22,14 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest'
-  }
+  },
+  env: {
+    "node": true,
+    "commonjs": true,
+  },
+  globals: {
+    "process": true,
+    "module": true,
+    "require": true,
+  },
 }

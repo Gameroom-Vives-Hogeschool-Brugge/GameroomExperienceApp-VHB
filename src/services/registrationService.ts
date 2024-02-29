@@ -1,10 +1,15 @@
 import axios from "axios";
 import type { RegistrationPerson } from "../models/Registrations";
 import { useActiveUserStore } from "@/stores/activeUserStore";
+import EncryptionService from "./encryptionService";
 
 export default class RegistrationService {
+    activeUserStore: any;
+    encryptionService: EncryptionService;
+    
     constructor() {
         this.activeUserStore = useActiveUserStore();
+        this.encryptionService = new EncryptionService();
     }
 
     async getRegistrations(): Promise<RegistrationPerson[]> {
@@ -14,8 +19,9 @@ export default class RegistrationService {
             },
         });
 
-        const registrations: RegistrationPerson[] = response.data;
-        return registrations;
+        const decryptedRegistrations = this.encryptionService.decryptObject(response.data) as RegistrationPerson[];
+
+        return decryptedRegistrations;
     }
 
     async registerPerson(person: RegistrationPerson | null): Promise<Boolean> {

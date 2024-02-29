@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { useActiveUserStore} from '@/stores/activeUserStore'
-import type { Rooms } from "@/models/Rooms";
+import type { Room } from "@/models/Rooms";
 
 export default class reservationsService {
-  apiLink: string
+  roomsApiLink: string
+  reservationsApiLink: string
   activeUserStore: ReturnType<typeof useActiveUserStore>
 
   constructor() {

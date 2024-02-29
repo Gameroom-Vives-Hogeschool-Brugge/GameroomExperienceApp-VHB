@@ -33,7 +33,9 @@ coverage
 Dockerfile
 
 #environments
-env.d.ts
+*env.d.ts
+keys.env
+*env
 
 #database
 src/assets/databases/*
