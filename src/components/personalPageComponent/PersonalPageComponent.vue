@@ -111,8 +111,8 @@ export default {
   },
   data() {
     return {
-      checkedIn: false,
-      show: true,
+      checkedIn: true,
+      show: false,
       loading: false
     }
   },

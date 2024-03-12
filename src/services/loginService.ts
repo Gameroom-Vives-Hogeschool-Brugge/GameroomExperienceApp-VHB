@@ -17,20 +17,27 @@ export default class LoginService {
   async login(link: string): Promise<number> {
     const EncryptedLink = this.encryptionService.encrypt(link)
 
-    const response = await axios.post(
-      this.apiLink,
-      { encryptedLink: EncryptedLink },
-      { headers: { 'Content-Type': 'application/json'}}
-    )
+    try {
+      const response = await axios.post(
+        this.apiLink,
+        { encryptedLink: EncryptedLink },
+        { headers: { 'Content-Type': 'application/json'}}
+      )
 
-    console.log(response)
+      if (response.status === 297) {
+        const descryptedActiveUser = this.encryptionService.decryptObject(response.data) as ActiveUser
+        this.activeUserStore.setActiveUser(descryptedActiveUser)
+        this.activeUserStore.activeUserSelected = true
+      }
 
-    if (response.status === 297) {
-      const descryptedActiveUser = this.encryptionService.decryptObject(response.data) as ActiveUser
-      this.activeUserStore.setActiveUser(descryptedActiveUser)
-      this.activeUserStore.activeUserSelected = true
+      return response.status
+
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        return error.response?.status || 500
+      } else {
+        return 500
+      }
     }
-
-    return response.status
   }
 }

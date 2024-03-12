@@ -6,6 +6,7 @@ import MyReservationComponent from '@/components/myReservationsComponent/MyReser
 import RegistrationComponent from '@/components/registrationComponent/RegistrationComponent.vue'
 import NewReservationComponent from '@/components/newReservationComponent/NewReservationComponent.vue'
 import RoomsComponent from '@/components/roomsComponent/RoomsComponent.vue' 
+import ReservationsView from '@/views/reservationsView/ReservationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +51,11 @@ const router = createRouter({
       path:"/Rooms",
       name:"RoomsComponent",
       component: RoomsComponent
+    },
+    {
+      path:"/Reservations",
+      name:"ReservationsView",
+      component: ReservationsView
     }
 
   ]

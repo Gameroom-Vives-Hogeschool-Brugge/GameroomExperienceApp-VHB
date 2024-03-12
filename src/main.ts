@@ -1,5 +1,6 @@
 import './assets/main.css'
 import { createApp } from 'vue'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 import App from './App.vue'
 import NavBarComponentVue from './components/navbarComponent/NavBarComponent.vue'
@@ -41,6 +42,8 @@ app.mount('#app')
 //Scripts
 import { useActiveUserStore } from './stores/activeUserStore'
 const activeUserStore = useActiveUserStore();
+
+activeUserStore.setActiveUserSelected(true);
 
 // Verify Userauthentication before routing to other pages
 router.beforeEach((to) => {
