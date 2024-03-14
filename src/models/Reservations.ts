@@ -11,27 +11,27 @@ export interface Reservation {
 }
 
 export interface NewReservation {
-    room: ObjectId,
+    roomId: ObjectId,
     date: Date,
     duration: number,
-    user: ObjectId
+    userId: ObjectId
 }
 
 export interface SelectedTimeSlot {
-    room : Room,
+    roomId : ObjectId,
     date : Date,
     reservationHour : string
 }
 
 export interface CreatedTimeSlot {
-    room : Room,
+    roomId : ObjectId,
     date : string,
     reservationHour : string,
     duration: number,
 }
 
 export interface SubmittedTimeSlot {
-    room : ObjectId,
+    roomId : ObjectId,
     date : Date,
     duration: number,
 }

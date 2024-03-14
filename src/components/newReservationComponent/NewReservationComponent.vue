@@ -2,7 +2,7 @@
     <v-sheet>
         <v-form @submit.prevent="createReservation()">
           <v-select
-            v-model="createdTimeSlot.room"
+            v-model="createdTimeSlot.roomId"
             label="Selecteer uw console"
             :items="rooms"
             :item-title="(room: Room) => room.description"
@@ -30,7 +30,7 @@
             :rules="rules"
           ></v-select>
           <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Maak Reservatie</v-btn>
-          <v-btn id="close-btn" color="btn secondary-color-btn">Annuleer</v-btn>
+          <v-btn id="close-btn" color="btn secondary-color-btn" @click="closeWindow()">Annuleer</v-btn>
         </v-form>
     </v-sheet>
   
@@ -39,6 +39,7 @@
 <script lang="ts">
 import { useRouter } from 'vue-router'
 import { useActiveUserStore } from '../../stores/activeUserStore'
+import { useRoomsStore } from '../../stores/roomsStore'
 import type { Room } from '@/models/Rooms'
 import type { ObjectId } from 'mongodb'
 import type { SelectedTimeSlot, CreatedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
@@ -64,16 +65,18 @@ export default {
   setup() {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
+    const roomsStore = useRoomsStore()
 
     return {
       router,
-      activeUserStore
+      activeUserStore,
+      roomsStore
     }
   },
   data() {
     return {
       createdTimeSlot: {
-        room: this.selectedTimeSlot.room._id as ObjectId,
+        roomId: this.selectedTimeSlot.roomId as ObjectId,
         date: this.dateTodateString(this.selectedTimeSlot.date) as string,
         reservationHour: this.selectedTimeSlot.reservationHour as string,
         duration: 1,
@@ -93,7 +96,7 @@ export default {
   methods: {
     createReservation() {
       const submittedTimeSlot = {
-        room: this.createdTimeSlot.room,
+        roomId: this.createdTimeSlot.roomId,
         date: this.dateStringtoDate(this.createdTimeSlot.date, this.createdTimeSlot.reservationHour),
         duration: this.createdTimeSlot.duration
       } as unknown as SubmittedTimeSlot
@@ -148,6 +151,9 @@ export default {
       console.log("localString:", localString)
       return localString
     },
+    closeWindow() {
+      this.$emit('closeWindow')
+    }
   },
   computed: {
     hourList(): string[] {
@@ -166,17 +172,18 @@ export default {
     },
     dateList(): string[] {
       let dateList = []
+      let dayCounter = 0
 
       //get the next 5 days
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
+        
         let date = new Date()
-        date.setDate(date.getDate() + i)
+        date.setDate(date.getDate() + dayCounter + i)
 
-        //if it's a weekend, add 1 or 2 days
-        if (date.getDay() === 0) {
-          date.setDate(date.getDate() + 1)
-        } else if (date.getDay() === 6) {
-          date.setDate(date.getDate() + 2)
+        //if it's a weekend, skip it
+        if (date.getDay() === 0 || date.getDay() === 6) {
+          ++dayCounter
+          continue
         }
 
         const newDateString = this.dateTodateString(date)

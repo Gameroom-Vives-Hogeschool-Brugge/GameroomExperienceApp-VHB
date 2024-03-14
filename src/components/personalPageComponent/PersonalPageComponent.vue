@@ -79,6 +79,7 @@ import { useRouter } from 'vue-router'
 import NavBarComponent from '../navbarComponent/NavBarComponent.vue'
 import { useActiveUserStore } from '@/stores/activeUserStore'
 import OpeningDoorService from '@/services/openingDoorService'
+import RoomsService from '@/services/roomsService'
 
 export default {
   name: 'PersonalPageComponent',
@@ -89,6 +90,7 @@ export default {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
     const openingDoorService = new OpeningDoorService()
+    const reservationsService = new RoomsService()
 
     const navigateTo = (route: string) => {
       if (route == 'HomeComponent') {
@@ -106,8 +108,12 @@ export default {
     return {
       navigateTo,
       activeUserStore,
+      reservationsService,
       openingDoorService
     }
+  },
+  async mounted() {
+    await this.reservationsService.getAllRooms()
   },
   data() {
     return {

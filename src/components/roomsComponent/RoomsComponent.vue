@@ -9,7 +9,7 @@
           <thead>
             <tr>
               <th>TIJDSTIP/DAG</th>
-              <th v-for="day in datelist" :key="dateToLocaleString(day)" class="text-center">
+              <th v-for="day in dateList" :key="dateToLocaleString(day)" class="text-center">
                 {{ dateToLocaleString(day).toUpperCase() }}
               </th>
             </tr>
@@ -17,7 +17,7 @@
           <tbody>
             <tr v-for="(hour,index ) in hourList" :key="hour">
               <th>{{ hour }} - {{ hoursPlusOneList[index] }}</th>
-              <td v-for="day in datelist" :key="dateToLocaleString(day)">
+              <td v-for="day in dateList" :key="dateToLocaleString(day)">
                 <v-btn 
                   block
                   variant="tonal"
@@ -30,14 +30,14 @@
                   variant="tonal"
                   v-if="checkReservationForThatTime(room, day, hour) === 2"
                   color="success"
-                  @click="createReservation(room, day, hour)"
+                  @click="createReservation(room._id, day, hour)"
                   >2 plaatsen vrij</v-btn
                 >
                 <v-btn block
                   variant="tonal"
                   v-if="checkReservationForThatTime(room, day, hour) === 1"
                   color="warning"
-                  @click="dialog = true"
+                  @click="createReservation(room._id, day, hour)"
                   >1 plaats vrij</v-btn
                 >
               </td>
@@ -49,7 +49,7 @@
   </v-window>
   <div v-if="loading" class="overlayContainer">
     <v-overlay
-          v-model="loading"
+          v-model="showLoadIcon"
           class="align-center justify-center"
           contained
         >
@@ -62,7 +62,7 @@
   </div>
   <div v-if="dialog" class="dialogContainer">
     <v-dialog v-model="dialog" max-width="500">
-      <NewReservationComponent @submit-Reservation="submitReservation" :rooms="rooms" :selectedTimeSlot="selectedTimeSlot" :dialog="dialog"/>
+      <NewReservationComponent @submit-Reservation="submitReservation" @close-Window="closeWindow" :rooms="rooms" :selectedTimeSlot="selectedTimeSlot" :dialog="dialog"/>
     </v-dialog>
   </div>
   
@@ -75,65 +75,92 @@ import ReservationsService from '@/services/reservationsService'
 import type { Room } from '@/models/Rooms'
 import type { Reservation, SelectedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
 import NewReservationComponent from '../newReservationComponent/NewReservationComponent.vue'
+import { ObjectId } from 'mongodb'
+import RoomsService from '@/services/roomsService'
+import moment from 'moment-timezone';
 
 export default {
   name: 'RoomsComponent',
   components: {
     NewReservationComponent
   },
+  props: {
+    rooms: {
+      type: Array as () => Room[],
+      required: true
+    },
+    loading: {
+      type: Boolean as () => Boolean,
+      required: true
+    },
+  },
+  emits: ['loadingCompleted'],
   setup() {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
     const reservationsService = new ReservationsService()
+    const roomsService = new RoomsService()
 
     return {
       router,
       activeUserStore,
-      reservationsService
+      reservationsService,
+      roomsService
     }
   },
   data() {
     return {
-      rooms: [] as Room[],
       reservations: [] as Reservation[],
       selectedTimeSlot : {
-        room: {} as unknown as Room,
+        roomId: "" as unknown as ObjectId,
         date: new Date(),
         reservationHour: '',
       } as unknown as SelectedTimeSlot,
-      loading: true,
       window: 1,
-      firstHour: 8,
-      lastHour: 17,
-      dialog: false
+      firstHour: 0,
+      lastHour: 0,
+      dialog: false,
+      showLoadIcon: true,
     }
   },
   async mounted() {
-    this.loading = true
-
-    await this.reservationsService.getAllRooms().then((response) => {
-      this.rooms = response as Room[]
-    })
     await this.reservationsService.getAllReservations().then((response) => {
       this.reservations = response as Reservation[]
     })
-    this.loading = false
+
+    await this.roomsService.getFirstAndLastReservationHour().then((response) => {
+      this.firstHour = response.first
+      this.lastHour = response.last
+    })
+
+    this.showLoadIcon = false
+
+    this.$emit('loadingCompleted')
   },
   methods: {
     checkReservationForThatTime(room: Room, date: Date, hour: string): number {
       let reservationsLeft = 2
 
+      const currentBrusselsTime = parseInt(moment().tz("Europe/Brussels").format('HH'))
+      const currentUTC = new Date().getUTCHours()
+      const difference = currentUTC - currentBrusselsTime
+
+      //check if there are any reservations for that room on that day and hour
       for (let reservation of this.reservations) {
         if (reservation.room._id === room._id) {
-          const reservationDate = new Date(reservation.date)
+          let reservationDate = new Date(reservation.date)
 
           if (
-            reservationDate.getDay() === date.getDay() &&
-            reservationDate.getMonth() === date.getMonth()
+            reservationDate.getUTCDay() === date.getUTCDay() &&
+            reservationDate.getUTCMonth() === date.getUTCMonth()
           ) {
-            const reservationStart = reservationDate.getHours()
-            const reservationEnd = reservationDate.getHours() + reservation.duration
-            const currentHour = parseInt(hour.split(':')[0])
+
+            const reservationStart = reservationDate.getUTCHours()
+            const reservationEnd = reservationDate.getUTCHours() + reservation.duration
+            
+            //get the current hour in brussels time
+            let currentHour = parseInt(hour.split(':')[0]) + difference
+
             if (currentHour >= reservationStart && currentHour < reservationEnd) {
               reservationsLeft--
             }
@@ -152,9 +179,9 @@ export default {
 
       return dateString
     },
-    createReservation(room: Room, day: Date, hour: string) : void{
+    createReservation(roomId: ObjectId , day: Date, hour: string) : void{
       const selectedTimeSlot = {
-        room: room,
+        roomId: roomId,
         date: day,
         reservationHour: hour,
       } as SelectedTimeSlot
@@ -167,7 +194,10 @@ export default {
         this.dialog = false
       })
 
-    }
+    },
+    closeWindow() {
+      this.dialog = false
+    },
   },
   computed: {
     hourList(): string[] {
@@ -184,26 +214,27 @@ export default {
       }
       return hoursPlusOneList
     },
-    datelist(): Date[] {
+    dateList(): Date[] {
       let dateList = []
+      let dayCounter = 0
 
       //get the next 5 days
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
+        
         let date = new Date()
-        date.setDate(date.getDate() + i)
+        date.setDate(date.getDate() + dayCounter + i)
 
-        //if it's a weekend, add 1 or 2 days
-        if (date.getDay() === 0) {
-          date.setDate(date.getDate() + 1)
-        } else if (date.getDay() === 6) {
-          date.setDate(date.getDate() + 2)
+        //if it's a weekend, skip it
+        if (date.getDay() === 0 || date.getDay() === 6) {
+          ++dayCounter
+          continue
         }
 
         dateList.push(date)
       }
 
       return dateList
-    }
+    },
   }
 }
 </script>

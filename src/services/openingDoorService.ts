@@ -11,7 +11,7 @@ export default class OpeningDoorService {
     async openDoor(): Promise<number> {
         const response = await axios.post("http://localhost:3000/opendoor",
         {
-            id: this.activeUserStore.getActiveUserid(),
+            _id: this.activeUserStore.getActiveUserMongoId(),
         },
         {
             headers: {

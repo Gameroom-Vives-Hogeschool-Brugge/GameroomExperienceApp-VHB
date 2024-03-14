@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import type { ActiveUser } from '@/models/activeUser'
+import type { ObjectId } from 'mongodb'
 
 export const useActiveUserStore = defineStore('activeUserStore', () => {
   const activeUser = ref({} as ActiveUser)
@@ -28,9 +29,9 @@ export const useActiveUserStore = defineStore('activeUserStore', () => {
     return temporaryCardNumber.value
   }
 
-  function getActiveUserid(): string | null | Boolean {
+  function getActiveUseridNumber(): string | null | Boolean {
     if (activeUserSelected.value) {
-      return activeUser.value.id
+      return activeUser.value.idNumber
     } else {
       return false
     }
@@ -38,6 +39,14 @@ export const useActiveUserStore = defineStore('activeUserStore', () => {
 
   function getActiveUserSelected(): Boolean {
     return activeUserSelected.value
+  }
+
+  function getActiveUserMongoId(): ObjectId | null { 
+    if (activeUserSelected.value) {
+      return activeUser.value._id
+    } else {
+      return null
+    }
   }
 
   function resetActiveUser(): void {
@@ -66,7 +75,8 @@ export const useActiveUserStore = defineStore('activeUserStore', () => {
     setTemporaryCardNumber,
     getActiveUser,
     getTemporaryCardNumber,
-    getActiveUserid,
+    getActiveUseridNumber,
+    getActiveUserMongoId,
     logOut,
     getActiveUserSelected,
     resetActiveUser,

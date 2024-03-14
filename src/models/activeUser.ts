@@ -1,7 +1,8 @@
 import { ObjectId } from 'mongodb';
 
 export interface ActiveUser {
-    id: string | null;
+    _id: ObjectId;
+    idNumber: string | null;
     firstName: string | null;
     lastName: string | null;
     type: string | null;
