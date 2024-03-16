@@ -7,8 +7,6 @@ export const useRoomsStore = defineStore(
   'roomsStore',
   () => {
     const rooms = ref({} as Room[])
-    const firstReservableHour = ref(8 as number)
-    const lastReservableHour = ref(17 as number) 
 
     function setRooms(pulledRooms: Room[]): Boolean {
       rooms.value = pulledRooms
@@ -20,12 +18,28 @@ export const useRoomsStore = defineStore(
       return rooms.value
     }
     
-    function getFirstReservableHour(): number {
-      return firstReservableHour.value
+    function getFirstReservableHour(roomId: ObjectId): number {
+      const room = rooms.value.find((room) => room._id === roomId)
+
+      if (room === undefined) {
+        return 12
+      } else {
+        const earliestReservationTime = parseInt(room.earliestReservationTime.split(':')[0])
+        
+        return earliestReservationTime
+      }
     }
 
-    function getLastReservableHour(): number {
-      return lastReservableHour.value
+    function getLastReservableHour(roomId: ObjectId): number {
+      const room = rooms.value.find((room) => room._id === roomId)
+
+      if (room === undefined) {
+        return 12
+      } else {
+
+        const latestReservationTime = parseInt(room.latestReservationTime.split(':')[0])
+        return latestReservationTime
+      }
     }
 
     function getRoomById(roomId: ObjectId): Room | undefined {

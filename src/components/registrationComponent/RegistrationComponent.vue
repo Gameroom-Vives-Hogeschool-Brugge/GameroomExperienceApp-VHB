@@ -130,7 +130,7 @@ export default {
     navigateTo (route: string) {
         if (route == "HomeComponent") {
             this.activeUserStore.setActiveUser({
-                id: null,
+                _id: null,
                 firstName: null,
                 lastName: null,
                 type: null,

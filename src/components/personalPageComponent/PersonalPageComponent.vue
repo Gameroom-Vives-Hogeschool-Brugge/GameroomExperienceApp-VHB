@@ -1,6 +1,10 @@
 <template>
   <NavBarComponent />
 
+  <div class="header">
+    <h1>Selecteer een optie</h1>
+  </div>
+
   <div class="container">
     <div class="container1">
       <v-tooltip
@@ -21,6 +25,11 @@
               :disabled="!validReservation"
             >
               Aanmelden
+              <v-icon
+              icon="mdi-door-closed-lock"
+              size="x-large"
+              end
+            ></v-icon>
             </v-btn>
           </div>
         </template>
@@ -34,23 +43,21 @@
         >Mijn Reservaties</v-btn
       >
       <v-btn
-        id="routeToNewReservationComponent"
-        @click="navigateTo('NewReservationComponent')"
-        class="btn secondary-color-btn"
-        >Nieuwe Reservatie</v-btn
-      >
-      <v-btn
         id="routeToRoomComponent"
-        @click="navigateTo('RoomsComponent')"
+        @click="navigateTo('ReservationsView')"
         class="btn secondary-color-btn"
         >Tijdsschema Lokaal</v-btn
       >
-      <v-btn
+    </div>
+    <div class="container3">
+      <div class="buttonContainer">
+        <v-btn
         id="routeToHomeComponent"
         @click="navigateTo('HomeComponent')"
         class="btn tertiary-color-btn"
         >Uitloggen</v-btn
       >
+      </div>
     </div>
   </div>
 
@@ -84,7 +91,7 @@ import RoomsService from '@/services/roomsService'
 export default {
   name: 'PersonalPageComponent',
   components: {
-    NavBarComponent
+    NavBarComponent,
   },
   setup() {
     const router = useRouter()
@@ -98,10 +105,8 @@ export default {
         router.push('/home')
       } else if (route == 'MyReservationComponent') {
         router.push('/MyReservations')
-      } else if (route == 'NewReservationComponent') {
-        router.push('/Newreservation')
-      } else if (route == 'RoomsComponent') {
-        router.push('/Rooms')
+      } else if (route == 'ReservationsView') {
+        router.push('/Reservations')
       }
     }
 
@@ -117,9 +122,9 @@ export default {
   },
   data() {
     return {
-      checkedIn: true,
+      checkedIn: false,
       show: false,
-      loading: false
+      loading: false,
     }
   },
   computed: {
@@ -155,13 +160,23 @@ export default {
 NavBarComponent {
   height: 10vh;
 }
+
+.header {
+  display: flex;
+  justify-content: center;
+
+  padding-top: 15vh;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   height: 80vh;
-  margin-top: 15vh;
+  padding-top: 5vh;
+  padding-bottom: 10vh;
+  background-color: white;
 }
 
 .container1,
@@ -173,13 +188,12 @@ NavBarComponent {
   align-items: center;
 }
 
-.container1 {
+.container1, container3 {
   height: 35%;
   justify-content: space-around;
 }
 
-.container2,
-.container3 {
+.container2 {
   height: 65%;
   justify-content: space-evenly;
   flex-wrap: wrap;
@@ -197,11 +211,12 @@ NavBarComponent {
 .v-btn--size-default {
   width: 30% !important;
   height: 100px !important;
+  min-width: 250px;
 }
 
 @media (max-width: 1200px) {
   .container {
-    margin-top: 20vh;
+    margin-top: 0vh;
   }
 
   .v-btn--size-default {
@@ -210,32 +225,14 @@ NavBarComponent {
 }
 
 @media (max-width: 800px) {
-  .container {
-    margin-top: 25vh;
-  }
-  .v-btn--size-default {
-    height: 80px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .container {
-    margin-top: 10vh;
-  }
   .container1,
   .container2,
   .container3 {
     flex-direction: column;
   }
+}
 
-  .v-btn--size-default {
-    width: 90% !important;
-    height: 20% !important;
-  }
-
-  .container1 .v-btn--size-default {
-    height: 40% !important;
-  }
+@media (max-width: 600px) {
 }
 
 .v-card-title,

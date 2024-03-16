@@ -2,8 +2,11 @@
     <NavBarComponent />
     <div class="container">
         <div class="buttonContainer">
-            <v-btn id="routeToPersonalPage" class="v-btn--size-default" @click="navigateTo('PersonalPage')">Terug</v-btn>
-            <v-btn class="v-btn--size-default" @click="createReservation()" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
+            <v-btn id="routeToPersonalPage" class="btn tertiary-color-btn backButton" @click="navigateTo('PersonalPage')">Terug</v-btn>
+            <v-btn class="btn primary-color-btn" @click="createReservation()" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
+        </div>
+        <div>
+            <h1>Reservaties</h1>
         </div>
         <div class="roomsComponentContainer">
             <RoomsComponent :rooms="rooms" :loading="loading" @loading-Completed="loadingCompleted"  />
@@ -115,7 +118,15 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 20vh;
+        height: 10vh;
+        min-width: 300px;
+    }
+
+    .headingContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 10vh;
         width: 100%;
     }
 
@@ -125,5 +136,9 @@ export default {
         justify-content: center;
         height: 80vh;
         width: 100%;
+    }
+
+    .backButton {
+        margin-right: 10px;
     }
 </style>

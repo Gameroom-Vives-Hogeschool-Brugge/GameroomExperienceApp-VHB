@@ -1,6 +1,7 @@
 import './assets/main.css'
 import { createApp } from 'vue'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 import App from './App.vue'
 import NavBarComponentVue from './components/navbarComponent/NavBarComponent.vue'

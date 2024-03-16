@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useRoomsStore } from '@/stores/roomsStore'
 import type { Room } from '@/models/Rooms'
+import type { ObjectId } from 'mongodb'
 
 export default class RoomsService {
   roomsApiLink: string
@@ -22,7 +23,7 @@ export default class RoomsService {
     return this.roomsStore.getRooms()
   }
 
-  async getFirstAndLastReservationHour(): Promise<{first: number, last : number}> {
-    return {first: this.roomsStore.getFirstReservableHour(), last: this.roomsStore.getLastReservableHour()}
+  async getFirstAndLastReservationHour(roomId: ObjectId): Promise<{first: number, last : number}> {
+    return {first: this.roomsStore.getFirstReservableHour(roomId), last: this.roomsStore.getLastReservableHour(roomId)}
   }
 }

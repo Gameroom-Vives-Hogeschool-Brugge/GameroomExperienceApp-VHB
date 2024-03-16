@@ -15,8 +15,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(hour,index ) in hourList" :key="hour">
-              <th>{{ hour }} - {{ hoursPlusOneList[index] }}</th>
+            <tr v-for="(hour,index ) in hourList(room._id)" :key="hour">
+              <th>{{ hour }} - {{ hoursPlusOneList(room._id)[index] }}</th>
               <td v-for="day in dateList" :key="dateToLocaleString(day)">
                 <v-btn 
                   block
@@ -71,6 +71,7 @@
 <script lang="ts">
 import { useRouter } from 'vue-router'
 import { useActiveUserStore } from '../../stores/activeUserStore'
+import { useRoomsStore } from '../../stores/roomsStore'
 import ReservationsService from '@/services/reservationsService'
 import type { Room } from '@/models/Rooms'
 import type { Reservation, SelectedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
@@ -98,12 +99,14 @@ export default {
   setup() {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
+    const roomsStore = useRoomsStore()
     const reservationsService = new ReservationsService()
     const roomsService = new RoomsService()
 
     return {
       router,
       activeUserStore,
+      roomsStore,
       reservationsService,
       roomsService
     }
@@ -117,8 +120,6 @@ export default {
         reservationHour: '',
       } as unknown as SelectedTimeSlot,
       window: 1,
-      firstHour: 0,
-      lastHour: 0,
       dialog: false,
       showLoadIcon: true,
     }
@@ -126,11 +127,6 @@ export default {
   async mounted() {
     await this.reservationsService.getAllReservations().then((response) => {
       this.reservations = response as Reservation[]
-    })
-
-    await this.roomsService.getFirstAndLastReservationHour().then((response) => {
-      this.firstHour = response.first
-      this.lastHour = response.last
     })
 
     this.showLoadIcon = false
@@ -198,22 +194,28 @@ export default {
     closeWindow() {
       this.dialog = false
     },
-  },
-  computed: {
-    hourList(): string[] {
+    hourList(roomId: ObjectId): string[] {
       let hourList = []
-      for (let i = this.firstHour; i < this.lastHour; i++) {
+      const earliestHour = this.roomsStore.getFirstReservableHour(roomId)
+      const latestHour = this.roomsStore.getLastReservableHour(roomId)
+
+      for (let i = earliestHour; i < latestHour; i++) {
         hourList.push(`${i}:00`)
       }
       return hourList
     },
-    hoursPlusOneList(): string[] {
+    hoursPlusOneList(roomId: ObjectId): string[] {
       let hoursPlusOneList = []
-      for (let i = this.firstHour + 1; i <= this.lastHour; i++) {
+      const earliestHour = this.roomsStore.getFirstReservableHour(roomId)
+      const latestHour = this.roomsStore.getLastReservableHour(roomId)
+
+      for (let i = earliestHour + 1; i <= latestHour; i++) {
         hoursPlusOneList.push(`${i}:00`)
       }
       return hoursPlusOneList
     },
+  },
+  computed: {
     dateList(): Date[] {
       let dateList = []
       let dayCounter = 0
