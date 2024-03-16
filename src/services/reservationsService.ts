@@ -44,12 +44,8 @@ export default class reservationsService {
       userId: user._id
     } as unknown as NewReservation
 
-    // TO POST THE NEW RESERVATION TO THE API
-    const response = await axios.post(this.reservationsApiLink, newReservation, {headers: {
+    await axios.post(this.reservationsApiLink, newReservation, {headers: {
       "Content-Type": "application/json",
     }})
-
-    console.log(response.data)
-
  }
 }

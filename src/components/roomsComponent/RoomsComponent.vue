@@ -143,6 +143,7 @@ export default {
 
       //check if there are any reservations for that room on that day and hour
       for (let reservation of this.reservations) {
+        console.log("reserationId:", reservation.room._id)
         if (reservation.room._id === room._id) {
           let reservationDate = new Date(reservation.date)
 

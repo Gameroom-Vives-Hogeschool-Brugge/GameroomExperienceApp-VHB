@@ -2,7 +2,7 @@
   <NavBarComponent />
 
   <div class="header">
-    <h1>Selecteer een optie</h1>
+    <h1>SELECTEER EEN OPTIE</h1>
   </div>
 
   <div class="container">
@@ -24,7 +24,7 @@
               class="btn primary-color-btn"
               :disabled="!validReservation"
             >
-              Aanmelden
+              Deur Openen
               <v-icon
               icon="mdi-door-closed-lock"
               size="x-large"
