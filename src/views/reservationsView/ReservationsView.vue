@@ -5,7 +5,7 @@
             <v-btn id="routeToPersonalPage" class="btn tertiary-color-btn backButton" @click="navigateTo('PersonalPage')">Terug</v-btn>
             <v-btn class="btn primary-color-btn" @click="createReservation()" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
         </div>
-        <div>
+        <div class="headingContainer">
             <h1>Reservaties</h1>
         </div>
         <div class="roomsComponentContainer">
@@ -86,7 +86,7 @@ export default {
             const selectedTimeSlot = {
                 roomId: this.rooms[0]._id,
                 date: new Date(),
-                reservationHour: "",
+                reservationHour: "9:00",
             } as SelectedTimeSlot
 
             this.selectedTimeSlot = selectedTimeSlot
@@ -118,7 +118,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 10vh;
+        height: 8vh;
         min-width: 300px;
     }
 
@@ -126,16 +126,17 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 10vh;
+        height:8vh;
         width: 100%;
     }
 
     .roomsComponentContainer {
         display: flex;
-        align-items: center;
+        align-items: start;
         justify-content: center;
         height: 80vh;
         width: 100%;
+        padding-top: 2vh;
     }
 
     .backButton {

@@ -5,6 +5,9 @@
             <v-btn id="routeToPersonalPage" class="btn tertiary-color-btn backButton" @click="navigateTo('PersonalPage')">Terug</v-btn>
             <v-btn class="btn primary-color-btn" @click="navigateTo('Reservations')" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
         </div>
+        <div class="headingContainer">
+            <h1>Mijn Reservaties</h1>
+        </div>
         <div class="todayReservationsContainer">
             <ReservationsListComponent :reservations="reservationsToday" :rooms="rooms" title="Mijn Reservaties Vandaag" :loading="loading"/>
         </div>
@@ -123,9 +126,17 @@ navbarComponent {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    height: 10vh;
-    width: 90%;
+    height: 8vh;
+    width: 100%;
 }
+
+.headingContainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height:8vh;
+        width: 100%;
+    }
 
 .todayReservationsContainer {
     display: flex;
@@ -141,6 +152,8 @@ navbarComponent {
     align-items: center;
     justify-content: center;
     width: 90%;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
 }
 
 </style>

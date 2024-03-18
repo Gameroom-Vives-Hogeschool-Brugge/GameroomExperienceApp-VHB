@@ -1,13 +1,14 @@
 <template>
     <v-sheet>
-        <v-form @submit.prevent="createReservation()">
+        <v-form @submit.prevent="submit">
           <v-select
             v-model="createdTimeSlot.roomId"
             label="Selecteer uw console"
             :items="rooms"
             :item-title="(room: Room) => room.description"
             :item-value="(room: Room) => room._id"
-            :rules="rules"
+            :rules="consoleRules"
+            required
           ></v-select>
           <v-select
             v-model="createdTimeSlot.date"
@@ -15,19 +16,22 @@
             :items="dateList"
             :items-title="(dateString: string) => dateStringtoLocaleDateString(dateString)"
             :itels-value="(dateString: string) => dateString"
-            :rules="rules"
+            :rules="dateRules"
+            required
           ></v-select>
           <v-select
             v-model="createdTimeSlot.reservationHour"
             label="Selecteer uw starttijd"
             :items="hourList"
-            :rules="rules"
+            :rules="hourRules"
+            required
           ></v-select>
           <v-select
             v-model="createdTimeSlot.duration"
             label="Selecteer de totale duur van uw sessie"
             :items="durationList"
-            :rules="rules"
+            :rules="durationRules"
+            required
           ></v-select>
           <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Maak Reservatie</v-btn>
           <v-btn id="close-btn" color="btn secondary-color-btn" @click="closeWindow()">Annuleer</v-btn>
@@ -81,20 +85,25 @@ export default {
         reservationHour: this.selectedTimeSlot.reservationHour as string,
         duration: 1,
       } as unknown as CreatedTimeSlot,
-      rules: [
-        (value: string) => {
-          if (!value) {
-            return 'Selecteer Uw Console'
-          }
-          return true
-        }
+      consoleRules: [
+        (v: any) => !!v || 'Console is verplicht',
+      ],
+      dateRules: [
+        (v: any) => !!v || 'Datum is verplicht',
+      ],
+      hourRules: [
+        (v: any) => !!v || 'Starttijd is verplicht',
+      ],
+      durationRules: [
+        (v: any) => !!v || 'Duur is verplicht',
       ],
         firstHour: 8,
         lastHour: 17
     }
   },
   methods: {
-    createReservation() {
+    submit(event: Event) : void {
+      //create a new SubmittedTimeSlot object
       const submittedTimeSlot = {
         roomId: this.createdTimeSlot.roomId,
         date: this.dateStringtoDate(this.createdTimeSlot.date, this.createdTimeSlot.reservationHour),

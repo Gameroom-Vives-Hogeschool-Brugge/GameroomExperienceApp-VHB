@@ -76,8 +76,6 @@ export default {
     formatDate(date: Date) : string {
       //format to dd/mm/yyyy HH:mm
       return moment(date).tz("Europe/Brussels").format('DD/MM/YYYY HH:mm')
-
-      //replace the hours with the new hours
     },
     calculatEndTime(reservation: Reservation) : Date {
       //add the duration to the start time

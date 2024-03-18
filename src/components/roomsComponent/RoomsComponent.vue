@@ -18,28 +18,51 @@
             <tr v-for="(hour,index ) in hourList(room._id)" :key="hour">
               <th>{{ hour }} - {{ hoursPlusOneList(room._id)[index] }}</th>
               <td v-for="day in dateList" :key="dateToLocaleString(day)">
-                <v-btn 
-                  block
-                  variant="tonal"
-                  v-if="checkReservationForThatTime(room, day, hour) === 0"
-                  color="error"
-                  >Volzet</v-btn
-                >
+                <v-tooltip location="bottom" id="tooltip" :open-delay="100" :open-on-hover="true">
+                  <template v-slot:activator="{props}">
+                  <v-btn 
+                    block
+                    variant="tonal"
+                    v-bind="props"
+                    v-if="checkReservationForThatTime(room, day, hour) === 0"
+                    color="error"
+                    >Volzet</v-btn
+                  >
 
-                <v-btn block
-                  variant="tonal"
-                  v-if="checkReservationForThatTime(room, day, hour) === 2"
-                  color="success"
-                  @click="createReservation(room._id, day, hour)"
-                  >2 plaatsen vrij</v-btn
-                >
-                <v-btn block
-                  variant="tonal"
-                  v-if="checkReservationForThatTime(room, day, hour) === 1"
-                  color="warning"
-                  @click="createReservation(room._id, day, hour)"
-                  >1 plaats vrij</v-btn
-                >
+                  <v-btn block
+                    variant="tonal"
+                    v-if="checkReservationForThatTime(room, day, hour) === 2"
+                    color="success"
+                    v-bind="props"
+                    @click="createReservation(room._id, day, hour)"
+                    >2 plaatsen vrij</v-btn
+                  >
+                  <v-btn block
+                    variant="tonal"
+                    v-if="checkReservationForThatTime(room, day, hour) === 1"
+                    color="warning"
+                    v-bind="props"
+                    @click="createReservation(room._id, day, hour)"
+                    >1 plaats vrij</v-btn
+                  >
+                </template>
+                <div v-if="checkReservationForThatTime(room, day, hour) === 2">
+                  <v-list>
+                      <v-list-item>
+                        <v-list-item-title>Geen reservaties</v-list-item-title>
+                      </v-list-item>
+                  </v-list>
+                </div>
+                <div v-else>
+                  <v-list>
+                      <v-list-item v-for="reservation in giveReservationsForThatTime(room,day,hour)" :key="reservation._id.toString()">
+                        <v-list-item-title>Persoon: {{ reservation.user.firstName }} {{ reservation.user.lastName }}</v-list-item-title >
+                        <v-list-item-subtitle>Starttijd: {{ formatDate(new Date(reservation.date))}}</v-list-item-subtitle>
+                        <v-list-item-subtitle>Eindtijd: {{ formatDate(calculatEndTime(reservation)) }}</v-list-item-subtitle>
+                      </v-list-item>
+                  </v-list>
+                </div>
+              </v-tooltip>
               </td>
             </tr>
           </tbody>
@@ -122,6 +145,7 @@ export default {
       window: 1,
       dialog: false,
       showLoadIcon: true,
+      myText: 'Hello World'
     }
   },
   async mounted() {
@@ -137,13 +161,10 @@ export default {
     checkReservationForThatTime(room: Room, date: Date, hour: string): number {
       let reservationsLeft = 2
 
-      const currentBrusselsTime = parseInt(moment().tz("Europe/Brussels").format('HH'))
-      const currentUTC = new Date().getUTCHours()
-      const difference = currentUTC - currentBrusselsTime
+      const difference = this.giveDifferenceBetweenBrusselsAndUTC()
 
       //check if there are any reservations for that room on that day and hour
       for (let reservation of this.reservations) {
-        console.log("reserationId:", reservation.room._id)
         if (reservation.room._id === room._id) {
           let reservationDate = new Date(reservation.date)
 
@@ -215,6 +236,54 @@ export default {
       }
       return hoursPlusOneList
     },
+    giveDifferenceBetweenBrusselsAndUTC() : number {
+      const currentBrusselsTime = parseInt(moment().tz("Europe/Brussels").format('HH'))
+      const currentUTC = new Date().getUTCHours()
+      const difference = currentUTC - currentBrusselsTime
+
+      return difference
+    },
+    giveReservationsForThatTime(room: Room, date: Date, hour: string) : Reservation[] {
+      let reservationsForThatTime = []
+
+      const difference = this.giveDifferenceBetweenBrusselsAndUTC()
+
+      //check if there are any reservations for that room on that day and hour
+      for (let reservation of this.reservations) {
+        if (reservation.room._id === room._id) {
+          let reservationDate = new Date(reservation.date)
+
+          if (
+            reservationDate.getUTCDay() === date.getUTCDay() &&
+            reservationDate.getUTCMonth() === date.getUTCMonth()
+          ) {
+
+            const reservationStart = reservationDate.getUTCHours()
+            const reservationEnd = reservationDate.getUTCHours() + reservation.duration
+            
+            //get the current hour in brussels time
+            let currentHour = parseInt(hour.split(':')[0]) + difference
+
+            if (currentHour >= reservationStart && currentHour < reservationEnd) {
+              reservationsForThatTime.push(reservation)
+            }
+          }
+        }
+      }
+
+      return reservationsForThatTime
+    },
+    formatDate(date: Date) : string {
+      //format to dd/mm/yyyy HH:mm
+      return moment(date).tz("Europe/Brussels").format('HH:mm')
+    },
+    calculatEndTime(reservation: Reservation) : Date {
+      //add the duration to the start time
+      let endTime = new Date(reservation.date);
+      endTime.setHours(endTime.getHours() + reservation.duration);
+
+      return endTime;
+    },
   },
   computed: {
     dateList(): Date[] {
@@ -249,8 +318,13 @@ table {
   overflow-x: scroll;
 }
 
+.v-tooltip__content {
+  background-color: white !important;
+  color: white !important;
+}
+
 .v-window {
-  width: 80% !important;
+  width: 100% !important;
 }
 
 .v-window-item {
@@ -261,10 +335,9 @@ table {
 }
 
 .v-card {
-  height: 70vh;
+  height: 100%;
   padding-bottom: 10vh;
 }
-
 .overlayContainer {
   width: 90vw !important;
   height: 80% !important;
@@ -291,6 +364,10 @@ table {
   justify-content: center;
   align-items: center;
   z-index: 1;
+}
+
+.tooltip {
+  background-color: #424242;
 }
 
 

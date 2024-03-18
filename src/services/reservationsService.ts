@@ -22,7 +22,6 @@ export default class reservationsService {
  }
 
  async getReservationsByUserId(userId: ObjectId): Promise<Reservation[]> {
-    
     const reservationsResponse = await axios.post(this.myReservationsApiLink, {
       userId: userId
     },
