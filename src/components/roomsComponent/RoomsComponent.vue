@@ -1,5 +1,5 @@
 <template>
-  <v-window v-model="window" show-arrows v-if="!loading">
+  <v-window v-model="window" show-arrows v-if="!loading && screenwidth > 1300">
     <v-window-item v-for="room in rooms" :key="room._id.toString()">
       <v-card class="d-flex justify-center align-center flex-column">
         <v-card-title>
@@ -15,54 +15,75 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(hour,index ) in hourList(room._id)" :key="hour">
+            <tr v-for="(hour, index) in hourList(room._id)" :key="hour">
               <th>{{ hour }} - {{ hoursPlusOneList(room._id)[index] }}</th>
               <td v-for="day in dateList" :key="dateToLocaleString(day)">
-                <v-tooltip location="bottom" id="tooltip" :open-delay="100" :open-on-hover="true">
-                  <template v-slot:activator="{props}">
-                  <v-btn 
-                    block
-                    variant="tonal"
-                    v-bind="props"
-                    v-if="checkReservationForThatTime(room, day, hour) === 0"
-                    color="error"
-                    >Volzet</v-btn
-                  >
-
-                  <v-btn block
-                    variant="tonal"
-                    v-if="checkReservationForThatTime(room, day, hour) === 2"
-                    color="success"
-                    v-bind="props"
-                    @click="createReservation(room._id, day, hour)"
-                    >2 plaatsen vrij</v-btn
-                  >
-                  <v-btn block
-                    variant="tonal"
-                    v-if="checkReservationForThatTime(room, day, hour) === 1"
-                    color="warning"
-                    v-bind="props"
-                    @click="createReservation(room._id, day, hour)"
-                    >1 plaats vrij</v-btn
-                  >
-                </template>
-                <div v-if="checkReservationForThatTime(room, day, hour) === 2">
+                <v-menu location="bottom" id="tooltip" :open-delay="100" :open-on-hover="true">
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      block
+                      variant="tonal"
+                      v-bind="props"
+                      v-if="checkReservationForThatTime(room, day, hour) === 0"
+                      color="error"
+                      >Volzet</v-btn
+                    >
+                    <v-btn
+                      block
+                      variant="tonal"
+                      v-if="checkReservationForThatTime(room, day, hour) === 2"
+                      color="success"
+                      v-bind="props"
+                      @click="createReservation(room._id, day, hour)"
+                      >2 plaatsen vrij</v-btn
+                    >
+                    <v-btn
+                      block
+                      variant="tonal"
+                      v-if="checkReservationForThatTime(room, day, hour) === 1"
+                      color="warning"
+                      v-bind="props"
+                      @click="createReservation(room._id, day, hour)"
+                      >1 plaats vrij</v-btn
+                    >
+                  </template>
                   <v-list>
-                      <v-list-item>
-                        <v-list-item-title>Geen reservaties</v-list-item-title>
-                      </v-list-item>
+                    <v-list-item
+                      v-for="reservation in giveReservationsForThatTime(room, day, hour)"
+                      :key="reservation._id.toString()"
+                    >
+                      <v-list-item-title
+                        >Persoon: {{ reservation.user.firstName }}
+                        {{ reservation.user.lastName }}</v-list-item-title
+                      >
+                      <v-list-item-subtitle
+                        >Starttijd:
+                        {{ formatDate(new Date(reservation.date)) }}</v-list-item-subtitle
+                      >
+                      <v-list-item-subtitle
+                        >Eindtijd:
+                        {{ formatDate(calculatEndTime(reservation)) }}</v-list-item-subtitle
+                      >
+                      <v-btn
+                        class="deleteButton"
+                        variant="outlined"
+                        color="error"
+                        v-if="checkIfUserIsAdmin"
+                        >Verwijder</v-btn
+                      >
+                    </v-list-item>
+                    <v-list-item v-if="giveReservationsForThatTime(room, day, hour).length < 2">
+                      <v-list-item-title>Maak een reservatie</v-list-item-title>
+                      <v-btn
+                        class="createReservationButton"
+                        variant="outlined"
+                        color="success"
+                        @click="createReservation(room._id, day, hour)"
+                        >Reserveer</v-btn
+                      >
+                    </v-list-item>
                   </v-list>
-                </div>
-                <div v-else>
-                  <v-list>
-                      <v-list-item v-for="reservation in giveReservationsForThatTime(room,day,hour)" :key="reservation._id.toString()">
-                        <v-list-item-title>Persoon: {{ reservation.user.firstName }} {{ reservation.user.lastName }}</v-list-item-title >
-                        <v-list-item-subtitle>Starttijd: {{ formatDate(new Date(reservation.date))}}</v-list-item-subtitle>
-                        <v-list-item-subtitle>Eindtijd: {{ formatDate(calculatEndTime(reservation)) }}</v-list-item-subtitle>
-                      </v-list-item>
-                  </v-list>
-                </div>
-              </v-tooltip>
+                </v-menu>
               </td>
             </tr>
           </tbody>
@@ -70,25 +91,118 @@
       </v-card>
     </v-window-item>
   </v-window>
+  <div class="roomDiv" v-if="!loading && screenwidth < 1300">
+    <v-select
+      label="Select"
+      :items="rooms"
+      :item-value="(room) => room._id.toString()"
+      :item-title="(room) => room.description"
+      v-model="selectedRoomId"
+    ></v-select>
+
+    <v-list class="listDiv">
+      <h2>{{ getRoombyId(selectedRoomId).description }}</h2>
+      <v-list-item v-for="day in dateList" :key="dateToLocaleString(day)">
+        <v-card>
+          <v-card-title>
+            <h3>{{ dateToLocaleString(day) }}</h3>
+          </v-card-title>
+          <div v-for="(hour, index) in hourList(selectedRoomId)" :key="hour">
+            <v-card-subtitle>
+              {{ hour }} - {{ hoursPlusOneList(selectedRoomId)[index] }}
+            </v-card-subtitle>
+            <v-menu location="bottom" id="tooltip" :open-delay="100" :open-on-click="true">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  block
+                  variant="tonal"
+                  color="error"
+                  v-bind="props"
+                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 0"
+                  >Volzet</v-btn
+                >
+                <v-btn
+                  block
+                  variant="tonal"
+                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 2"
+                  color="success"
+                  v-bind="props"
+                  >2 plaatsen vrij</v-btn
+                >
+                <v-btn
+                  block
+                  variant="tonal"
+                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 1"
+                  color="warning"
+                  v-bind="props"
+                  >1 plaats vrij</v-btn
+                >
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="reservation in giveReservationsForThatTime(
+                    getRoombyId(selectedRoomId),
+                    day,
+                    hour
+                  )"
+                  :key="reservation._id.toString()"
+                >
+                  <v-list-item-title
+                    >Persoon: {{ reservation.user.firstName }}
+                    {{ reservation.user.lastName }}</v-list-item-title
+                  >
+                  <v-list-item-subtitle
+                    >Starttijd: {{ formatDate(new Date(reservation.date)) }}</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle
+                    >Eindtijd: {{ formatDate(calculatEndTime(reservation)) }}</v-list-item-subtitle
+                  >
+                  <v-btn
+                    class="deleteButton"
+                    variant="outlined"
+                    color="error"
+                    v-if="checkIfUserIsAdmin"
+                    >Verwijder</v-btn
+                  >
+                </v-list-item>
+                <v-list-item
+                  v-if="
+                    giveReservationsForThatTime(getRoombyId(selectedRoomId), day, hour).length < 2
+                  "
+                >
+                  <v-list-item-title>Maak een reservatie</v-list-item-title>
+                  <v-btn
+                    class="createReservationButton"
+                    variant="outlined"
+                    color="success"
+                    @click="createReservation(selectedRoomId, day, hour)"
+                    >Reserveer</v-btn
+                  >
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+        </v-card>
+      </v-list-item>
+    </v-list>
+  </div>
+
   <div v-if="loading" class="overlayContainer">
-    <v-overlay
-          v-model="showLoadIcon"
-          class="align-center justify-center"
-          contained
-        >
-        <v-progress-circular
-        color="error"
-        size="128"
-        indeterminate
-      ></v-progress-circular>
-     </v-overlay>
+    <v-overlay v-model="showLoadIcon" class="align-center justify-center" contained>
+      <v-progress-circular color="error" size="128" indeterminate></v-progress-circular>
+    </v-overlay>
   </div>
   <div v-if="dialog" class="dialogContainer">
     <v-dialog v-model="dialog" max-width="500">
-      <NewReservationComponent @submit-Reservation="submitReservation" @close-Window="closeWindow" :rooms="rooms" :selectedTimeSlot="selectedTimeSlot" :dialog="dialog"/>
+      <NewReservationComponent
+        @submit-Reservation="submitReservation"
+        @close-Window="closeWindow"
+        :rooms="rooms"
+        :selectedTimeSlot="selectedTimeSlot"
+        :dialog="dialog"
+      />
     </v-dialog>
   </div>
-  
 </template>
 
 <script lang="ts">
@@ -101,7 +215,7 @@ import type { Reservation, SelectedTimeSlot, SubmittedTimeSlot } from '@/models/
 import NewReservationComponent from '../newReservationComponent/NewReservationComponent.vue'
 import { ObjectId } from 'mongodb'
 import RoomsService from '@/services/roomsService'
-import moment from 'moment-timezone';
+import moment from 'moment-timezone'
 
 export default {
   name: 'RoomsComponent',
@@ -116,7 +230,7 @@ export default {
     loading: {
       type: Boolean as () => Boolean,
       required: true
-    },
+    }
   },
   emits: ['loadingCompleted'],
   setup() {
@@ -137,21 +251,24 @@ export default {
   data() {
     return {
       reservations: [] as Reservation[],
-      selectedTimeSlot : {
-        roomId: "" as unknown as ObjectId,
+      selectedTimeSlot: {
+        roomId: '' as unknown as ObjectId,
         date: new Date(),
-        reservationHour: '',
+        reservationHour: ''
       } as unknown as SelectedTimeSlot,
       window: 1,
       dialog: false,
       showLoadIcon: true,
-      myText: 'Hello World'
+      screenwidth: window.innerWidth,
+      selectedRoomId: null as unknown as ObjectId
     }
   },
   async mounted() {
     await this.reservationsService.getAllReservations().then((response) => {
       this.reservations = response as Reservation[]
     })
+
+    this.selectedRoomId = this.rooms[0]._id
 
     this.showLoadIcon = false
 
@@ -172,10 +289,9 @@ export default {
             reservationDate.getUTCDay() === date.getUTCDay() &&
             reservationDate.getUTCMonth() === date.getUTCMonth()
           ) {
-
             const reservationStart = reservationDate.getUTCHours()
             const reservationEnd = reservationDate.getUTCHours() + reservation.duration
-            
+
             //get the current hour in brussels time
             let currentHour = parseInt(hour.split(':')[0]) + difference
 
@@ -197,21 +313,20 @@ export default {
 
       return dateString
     },
-    createReservation(roomId: ObjectId , day: Date, hour: string) : void{
+    createReservation(roomId: ObjectId, day: Date, hour: string): void {
       const selectedTimeSlot = {
         roomId: roomId,
         date: day,
-        reservationHour: hour,
+        reservationHour: hour
       } as SelectedTimeSlot
 
       this.selectedTimeSlot = selectedTimeSlot
       this.dialog = true
     },
-    async submitReservation(submittedTimeSlot: SubmittedTimeSlot) : Promise<void> {
+    async submitReservation(submittedTimeSlot: SubmittedTimeSlot): Promise<void> {
       await this.reservationsService.createReservation(submittedTimeSlot).then(() => {
         this.dialog = false
       })
-
     },
     closeWindow() {
       this.dialog = false
@@ -236,14 +351,14 @@ export default {
       }
       return hoursPlusOneList
     },
-    giveDifferenceBetweenBrusselsAndUTC() : number {
-      const currentBrusselsTime = parseInt(moment().tz("Europe/Brussels").format('HH'))
+    giveDifferenceBetweenBrusselsAndUTC(): number {
+      const currentBrusselsTime = parseInt(moment().tz('Europe/Brussels').format('HH'))
       const currentUTC = new Date().getUTCHours()
       const difference = currentUTC - currentBrusselsTime
 
       return difference
     },
-    giveReservationsForThatTime(room: Room, date: Date, hour: string) : Reservation[] {
+    giveReservationsForThatTime(room: Room, date: Date, hour: string): Reservation[] {
       let reservationsForThatTime = []
 
       const difference = this.giveDifferenceBetweenBrusselsAndUTC()
@@ -257,10 +372,9 @@ export default {
             reservationDate.getUTCDay() === date.getUTCDay() &&
             reservationDate.getUTCMonth() === date.getUTCMonth()
           ) {
-
             const reservationStart = reservationDate.getUTCHours()
             const reservationEnd = reservationDate.getUTCHours() + reservation.duration
-            
+
             //get the current hour in brussels time
             let currentHour = parseInt(hour.split(':')[0]) + difference
 
@@ -273,17 +387,20 @@ export default {
 
       return reservationsForThatTime
     },
-    formatDate(date: Date) : string {
+    formatDate(date: Date): string {
       //format to dd/mm/yyyy HH:mm
-      return moment(date).tz("Europe/Brussels").format('HH:mm')
+      return moment(date).tz('Europe/Brussels').format('HH:mm')
     },
-    calculatEndTime(reservation: Reservation) : Date {
+    calculatEndTime(reservation: Reservation): Date {
       //add the duration to the start time
-      let endTime = new Date(reservation.date);
-      endTime.setHours(endTime.getHours() + reservation.duration);
+      let endTime = new Date(reservation.date)
+      endTime.setHours(endTime.getHours() + reservation.duration)
 
-      return endTime;
+      return endTime
     },
+    getRoombyId(roomId: ObjectId): Room {
+      return this.rooms.find((room) => room._id === roomId) as Room
+    }
   },
   computed: {
     dateList(): Date[] {
@@ -292,7 +409,6 @@ export default {
 
       //get the next 5 days
       for (let i = 0; i < 6; i++) {
-        
         let date = new Date()
         date.setDate(date.getDate() + dayCounter + i)
 
@@ -307,12 +423,16 @@ export default {
 
       return dateList
     },
+    checkIfUserIsAdmin(): boolean {
+      console.log(this.activeUserStore.getActiveUserRole())
+
+      return this.activeUserStore.getActiveUserRole() === 'Admin'
+    }
   }
 }
 </script>
 
 <style>
-
 table {
   display: block;
   overflow-x: scroll;
@@ -369,6 +489,30 @@ table {
 .tooltip {
   background-color: #424242;
 }
+
+.deleteButton {
+  margin-top: 10px;
+}
+
+.createReservationButton {
+  margin-top: 10px;
+}
+
+.roomDiv {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.listDiv {
+  width: 90vw;
+}
+
+.listDiv > h2 {
+  text-align: center;
+}
+
 
 
 </style>

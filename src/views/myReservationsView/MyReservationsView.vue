@@ -51,6 +51,8 @@ setup () {
     const navigateTo = (route: string) => {
         if (route == "PersonalPage") {
             router.push("/PersonalPage");
+        } else if (route == "Reservations") {
+            router.push("/Reservations");
         }
     };
     return {

@@ -13,7 +13,7 @@
             <v-card-subtitle> Starttijd: {{ formatDate(new Date(reservation.date)) }} </v-card-subtitle>
             <v-card-subtitle> Eindtijd: {{ formatDate(calculatEndTime(reservation)) }} </v-card-subtitle>
             <v-card-actions>
-                <v-btn color="error" variant="outlined">Annuleren</v-btn>
+                <v-btn color="error" variant="outlined" @click="deleteReservation(reservation._id)">Annuleren</v-btn>
             </v-card-actions>
           </v-card-item>
         </v-card>
@@ -39,9 +39,13 @@
 //types
 import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
+import type { ObjectId } from 'mongodb'
 
 //moment
 import moment from 'moment-timezone';
+
+//services
+import ReservationsService from '@/services/reservationsService'
 
 export default {
   name: 'ReservationsListComponent',
@@ -65,7 +69,11 @@ export default {
     }
   },
   setup() {
-    return {}
+    const reservationsService = new ReservationsService()
+
+    return {
+      reservationsService
+    }
   },
   data() {
     return {
@@ -90,6 +98,14 @@ export default {
       const difference = currentBrusselsTime - currentUTC
 
       return difference
+    },
+    async deleteReservation(reservationId: ObjectId) {
+      const responseStatus = await this.reservationsService.deleteReservation(reservationId)
+      if (responseStatus == 200) {
+        console.log('reservation deleted')
+      } else {
+        console.log('error deleting reservation')
+      }
     }
   },
   computed: {

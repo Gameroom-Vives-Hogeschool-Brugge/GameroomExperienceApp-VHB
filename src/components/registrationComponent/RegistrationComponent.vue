@@ -129,13 +129,7 @@ export default {
     },
     navigateTo (route: string) {
         if (route == "HomeComponent") {
-            this.activeUserStore.setActiveUser({
-                _id: null,
-                firstName: null,
-                lastName: null,
-                type: null,
-                role: null
-            });
+            this.activeUserStore.resetActiveUser();
             this.activeUserStore.setTemporaryCardNumber("");
             this.activeUserStore.setActiveUserSelected(false);
             this.router.push("/home");

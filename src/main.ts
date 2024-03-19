@@ -44,7 +44,7 @@ app.mount('#app')
 import { useActiveUserStore } from './stores/activeUserStore'
 const activeUserStore = useActiveUserStore();
 
-activeUserStore.setActiveUserSelected(true);
+//activeUserStore.setActiveUserSelected(true);
 
 // Verify Userauthentication before routing to other pages
 router.beforeEach((to) => {

@@ -49,6 +49,14 @@ export const useActiveUserStore = defineStore('activeUserStore', () => {
     }
   }
 
+  function getActiveUserRole(): string | null {
+    if (activeUserSelected.value) {
+      return activeUser.value.role
+    } else {
+      return null
+    }
+  }
+
   function resetActiveUser(): void {
     activeUser.value = {} as ActiveUser
   }
@@ -77,6 +85,7 @@ export const useActiveUserStore = defineStore('activeUserStore', () => {
     getTemporaryCardNumber,
     getActiveUseridNumber,
     getActiveUserMongoId,
+    getActiveUserRole,
     logOut,
     getActiveUserSelected,
     resetActiveUser,

@@ -33,6 +33,15 @@ export default class reservationsService {
     return reservations
  }
 
+ async deleteReservation(reservationId: ObjectId): Promise<number> {
+    const body = {
+      reservationId: reservationId
+    }
+    const response = await axios.delete(this.reservationsApiLink, {data: body})
+
+    return response.status
+ }
+
  async createReservation(submittedTimeSlot : SubmittedTimeSlot): Promise<void> {
     const user = this.activeUserStore.getActiveUser()
 
@@ -43,8 +52,14 @@ export default class reservationsService {
       userId: user._id
     } as unknown as NewReservation
 
-    await axios.post(this.reservationsApiLink, newReservation, {headers: {
+    const responseStatus = await axios.post(this.reservationsApiLink, newReservation, {headers: {
       "Content-Type": "application/json",
     }})
+
+    if (responseStatus.status !== 201) {
+      throw new Error("Failed to create reservation")
+    } else {
+      console.log("Reservation created")
+    }
  }
 }

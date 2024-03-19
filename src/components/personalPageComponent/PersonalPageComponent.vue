@@ -20,7 +20,7 @@
             class="buttonContainer">
             <v-btn
               id="routeToCheckInComponent"
-              @click="checkedIn = true"
+              @click="openDoor()"
               class="btn primary-color-btn"
               :disabled="!validReservation"
             >
@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <v-dialog v-model="checkedIn" v-if="checkedIn" @click="openDoor()">
+  <v-dialog v-model="checkedIn" v-if="checkedIn">
     <v-card>
         <v-progress-circular v-if="loading" indeterminate color="#E00020" bg-color="#DDD"></v-progress-circular>
       <v-card-title>
@@ -73,8 +73,8 @@
         <p>U wordt automatisch uitgelogd na het openen van de deur.</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn id="close-btn" @click="openDoor()" color="btn secondary-color-btn"
-          >Deur openen</v-btn
+        <v-btn id="close-btn" color="btn secondary-color-btn"
+          >Begrepen</v-btn
         >
       </v-card-actions>
     </v-card>
@@ -83,10 +83,20 @@
 
 <script lang="ts">
 import { useRouter } from 'vue-router'
+
+//components
 import NavBarComponent from '../navbarComponent/NavBarComponent.vue'
+
+//stores
 import { useActiveUserStore } from '@/stores/activeUserStore'
+
+//services
 import OpeningDoorService from '@/services/openingDoorService'
 import RoomsService from '@/services/roomsService'
+import ReservationsService from '@/services/reservationsService'
+
+//models
+import type { Reservation } from '@/models/Reservations'
 
 export default {
   name: 'PersonalPageComponent',
@@ -97,7 +107,8 @@ export default {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
     const openingDoorService = new OpeningDoorService()
-    const reservationsService = new RoomsService()
+    const reservationsService = new ReservationsService()
+    const roomsService = new RoomsService()
 
     const navigateTo = (route: string) => {
       if (route == 'HomeComponent') {
@@ -114,44 +125,58 @@ export default {
       navigateTo,
       activeUserStore,
       reservationsService,
+      roomsService,
       openingDoorService
     }
   },
   async mounted() {
-    await this.reservationsService.getAllRooms()
+    await this.roomsService.getAllRooms()
   },
   data() {
     return {
       checkedIn: false,
-      show: false,
       loading: false,
     }
   },
   computed: {
-    validReservation() {
-      if (this.show) {
-        return true
-      } else {
-        return false
-      }
-    },
     noValidReservation() {
-      if (this.show) {
-        return false
-      } else {
-        return true
-      }
+      return !this.validReservation
     }
   },
   methods: {
     async openDoor(): Promise<void> {
+      this.checkedIn = true
       this.loading = true
       const responseCode = await this.openingDoorService.openDoor()
       this.loading = false
       if (responseCode == 200) {
         console.log('Door opened')
+      } else {
+        console.log('Door not opened')
       }
-    }
+      // Automatically log out after opening the door after 5 seconds
+      setTimeout(() => {
+        this.activeUserStore.logOut()
+        this.$router.push('/home')
+      }, 5000)
+    },
+    async validReservation() {
+      const reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
+
+      // Check if there is a reservation within 30 minutes
+      const now = new Date()
+      const nowPlus30 = new Date(now.getTime() + 30 * 60000)
+      const validReservation = reservations.find((reservation: Reservation) => {
+        const reservationDate = new Date(reservation.date)
+        return reservationDate >= now && reservationDate <= nowPlus30
+      })
+
+      if (validReservation) {
+        return true
+      } else {
+        return false
+      }
+    },
   }
 }
 </script>
