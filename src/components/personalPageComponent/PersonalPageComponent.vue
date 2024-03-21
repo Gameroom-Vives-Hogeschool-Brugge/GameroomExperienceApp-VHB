@@ -8,11 +8,12 @@
   <div class="container">
     <div class="container1">
       <v-tooltip
-        text="U heeft geen reservatie binnen de 30 min van nu..."
         location="top"
         offset="-70"
-        :open-on-hover=noValidReservation
-        :open-on-click=noValidReservation
+        :open-on-hover="!validReservation()"
+        :open-on-click="!validReservation()"
+        :disabled="validReservation()"
+        text="U heeft geen reservatie binnen 30 minuten."
       >
         <template v-slot:activator="{ props }">
           <div 
@@ -22,8 +23,9 @@
               id="routeToCheckInComponent"
               @click="openDoor()"
               class="btn primary-color-btn"
-              :disabled="!validReservation"
+              :disabled="!validReservation()"
             >
+              <v-progress-circular v-if="loadReservations" class="loadReservationsCircle" indeterminate color="#C4001C" bg-color="#FFFFFF"></v-progress-circular>
               Deur Openen
               <v-icon
               icon="mdi-door-closed-lock"
@@ -47,6 +49,12 @@
         @click="navigateTo('ReservationsView')"
         class="btn secondary-color-btn"
         >Tijdsschema Lokaal</v-btn
+      >
+      <v-btn
+        id="routeToAdminsView"
+        @click="navigateTo('AdminsView')"
+        class="btn secondary-color-btn"
+        >Admin Paneel</v-btn
       >
     </div>
     <div class="container3">
@@ -92,7 +100,6 @@ import { useActiveUserStore } from '@/stores/activeUserStore'
 
 //services
 import OpeningDoorService from '@/services/openingDoorService'
-import RoomsService from '@/services/roomsService'
 import ReservationsService from '@/services/reservationsService'
 
 //models
@@ -108,7 +115,6 @@ export default {
     const activeUserStore = useActiveUserStore()
     const openingDoorService = new OpeningDoorService()
     const reservationsService = new ReservationsService()
-    const roomsService = new RoomsService()
 
     const navigateTo = (route: string) => {
       if (route == 'HomeComponent') {
@@ -118,6 +124,9 @@ export default {
         router.push('/MyReservations')
       } else if (route == 'ReservationsView') {
         router.push('/Reservations')
+      } else if (route == 'AdminsView') {
+        if (activeUserStore.activeUser.role == 'Student') //change later to 'admin'
+          { router.push('/Admins') }
       }
     }
 
@@ -125,23 +134,35 @@ export default {
       navigateTo,
       activeUserStore,
       reservationsService,
-      roomsService,
       openingDoorService
     }
   },
+  created() {
+    //resize event listener
+    window.addEventListener('resize', () => {
+      this.screenWidth = window.innerWidth
+    })
+  },
   async mounted() {
-    await this.roomsService.getAllRooms()
+    this.reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
+    this.loadReservations = false
+
+    // Check if there is a reservation within 30 minutes
+    const minute = 1000 * 60
+    setInterval(async () => {
+      this.reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
+    }, minute);
   },
   data() {
     return {
       checkedIn: false,
       loading: false,
+      loadReservations: true,
+      reservations: [] as unknown as Reservation[],
+      screenWidth: window.innerWidth
     }
   },
   computed: {
-    noValidReservation() {
-      return !this.validReservation
-    }
   },
   methods: {
     async openDoor(): Promise<void> {
@@ -160,22 +181,25 @@ export default {
         this.$router.push('/home')
       }, 5000)
     },
-    async validReservation() {
-      const reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
-
+    validReservation() : boolean {
       // Check if there is a reservation within 30 minutes
       const now = new Date()
-      const nowPlus30 = new Date(now.getTime() + 30 * 60000)
-      const validReservation = reservations.find((reservation: Reservation) => {
+      let found = false
+
+      this.reservations.find((reservation: Reservation) => {
         const reservationDate = new Date(reservation.date)
-        return reservationDate >= now && reservationDate <= nowPlus30
+        //check if the days are the same
+        if (now.getDate() == reservationDate.getDate()) {
+          const startTime = new Date(reservationDate.getTime())
+          const oneHour = 3600000 //miliseconds
+          const endTime = new Date(reservationDate.getTime() + reservation.duration * oneHour)
+          const endTimePlus30 = new Date(endTime.getTime() + oneHour / 2)
+          //check if now is between the start and end time + 30mins of the reservation
+            if (now >= startTime && now <= endTimePlus30) {found = true}
+        }
       })
 
-      if (validReservation) {
-        return true
-      } else {
-        return false
-      }
+      return found
     },
   }
 }
@@ -237,6 +261,12 @@ NavBarComponent {
   width: 30% !important;
   height: 100px !important;
   min-width: 250px;
+}
+
+.loadReservationsCircle{
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
 
 @media (max-width: 1200px) {

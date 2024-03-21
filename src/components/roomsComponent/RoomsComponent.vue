@@ -1,5 +1,5 @@
 <template>
-  <v-window v-model="window" show-arrows v-if="!loading && screenwidth > 1300">
+  <v-window v-model="window" show-arrows v-if="!loading && screenwidth > 1250">
     <v-window-item v-for="room in rooms" :key="room._id.toString()">
       <v-card class="d-flex justify-center align-center flex-column">
         <v-card-title>
@@ -18,7 +18,7 @@
             <tr v-for="(hour, index) in hourList(room._id)" :key="hour">
               <th>{{ hour }} - {{ hoursPlusOneList(room._id)[index] }}</th>
               <td v-for="day in dateList" :key="dateToLocaleString(day)">
-                <v-menu location="bottom" id="tooltip" :open-delay="100" :open-on-hover="true">
+                <v-menu location="bottom" id="tooltip" :open-delay="200" :open-on-hover="true" :open-on-click="true" :close-delay="200">
                   <template v-slot:activator="{ props }">
                     <v-btn
                       block
@@ -34,7 +34,6 @@
                       v-if="checkReservationForThatTime(room, day, hour) === 2"
                       color="success"
                       v-bind="props"
-                      @click="createReservation(room._id, day, hour)"
                       >2 plaatsen vrij</v-btn
                     >
                     <v-btn
@@ -43,7 +42,6 @@
                       v-if="checkReservationForThatTime(room, day, hour) === 1"
                       color="warning"
                       v-bind="props"
-                      @click="createReservation(room._id, day, hour)"
                       >1 plaats vrij</v-btn
                     >
                   </template>
@@ -68,7 +66,8 @@
                         class="deleteButton"
                         variant="outlined"
                         color="error"
-                        v-if="checkIfUserIsAdmin"
+                        v-if="checkIfAnnulable(reservation)"
+                        @click="openDeleteDialog(reservation._id)"
                         >Verwijder</v-btn
                       >
                     </v-list-item>
@@ -91,7 +90,8 @@
       </v-card>
     </v-window-item>
   </v-window>
-  <div class="roomDiv" v-if="!loading && screenwidth < 1300">
+
+  <div class="roomDiv" v-if="!loading && screenwidth < 1250">
     <v-select
       label="Select"
       :items="rooms"
@@ -101,11 +101,10 @@
     ></v-select>
 
     <v-list class="listDiv">
-      <h2>{{ getRoombyId(selectedRoomId).description }}</h2>
       <v-list-item v-for="day in dateList" :key="dateToLocaleString(day)">
         <v-card>
           <v-card-title>
-            <h3>{{ dateToLocaleString(day) }}</h3>
+            <h3>{{ getRoombyId(selectedRoomId).description }} | {{ dateToLocaleString(day) }}</h3>
           </v-card-title>
           <div v-for="(hour, index) in hourList(selectedRoomId)" :key="hour">
             <v-card-subtitle>
@@ -162,6 +161,7 @@
                     variant="outlined"
                     color="error"
                     v-if="checkIfUserIsAdmin"
+                    @click="openDeleteDialog(reservation._id)"
                     >Verwijder</v-btn
                   >
                 </v-list-item>
@@ -203,6 +203,17 @@
       />
     </v-dialog>
   </div>
+  <div v-if="deleteDialog" class="dialogContainer">
+    <v-dialog v-model="deleteDialog" max-width="500">
+      <v-card>
+        <v-card-title>Are you sure you want to delete this reservation?</v-card-title>
+        <v-card-actions>
+          <v-btn @click="deleteDialog = false">Cancel</v-btn>
+          <v-btn @click="deleteReservation()">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -232,7 +243,7 @@ export default {
       required: true
     }
   },
-  emits: ['loadingCompleted'],
+  emits: ['loadingCompleted', 'loadingStarted'],
   setup() {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
@@ -250,7 +261,7 @@ export default {
   },
   data() {
     return {
-      reservations: [] as Reservation[],
+      reservations: [] as Reservation[] | [],
       selectedTimeSlot: {
         roomId: '' as unknown as ObjectId,
         date: new Date(),
@@ -260,16 +271,29 @@ export default {
       dialog: false,
       showLoadIcon: true,
       screenwidth: window.innerWidth,
-      selectedRoomId: null as unknown as ObjectId
+      selectedRoomId: null as unknown as ObjectId,
+      deleteDialog: false,
+      reservationToDelete: null as unknown as ObjectId
     }
+  },
+  created () {
+    //if window is resized, update the screenwidth
+    window.addEventListener('resize', () => {
+      this.screenwidth = window.innerWidth
+    })
   },
   async mounted() {
     await this.reservationsService.getAllReservations().then((response) => {
       this.reservations = response as Reservation[]
     })
 
-    this.selectedRoomId = this.rooms[0]._id
+    //wait for 2 seconds if their are no reservations
+    if (this.reservations.length === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    }
 
+    this.selectedRoomId = this.rooms[0]._id as ObjectId
+    
     this.showLoadIcon = false
 
     this.$emit('loadingCompleted')
@@ -324,9 +348,22 @@ export default {
       this.dialog = true
     },
     async submitReservation(submittedTimeSlot: SubmittedTimeSlot): Promise<void> {
-      await this.reservationsService.createReservation(submittedTimeSlot).then(() => {
-        this.dialog = false
-      })
+      const responseStatus = await this.reservationsService.createReservation(submittedTimeSlot)
+      this.dialog = false
+
+      if (responseStatus === 201) {
+        this.$emit('loadingStarted')
+        this.showLoadIcon = true
+
+        await this.reservationsService.getAllReservations().then((response) => {
+          this.reservations = response as Reservation[]
+        })
+
+        this.showLoadIcon = false
+        this.$emit('loadingCompleted')
+      } else {
+        console.log('Error creating reservation')
+      }
     },
     closeWindow() {
       this.dialog = false
@@ -400,6 +437,35 @@ export default {
     },
     getRoombyId(roomId: ObjectId): Room {
       return this.rooms.find((room) => room._id === roomId) as Room
+    },
+    openDeleteDialog(reservationId: ObjectId) {
+      this.deleteDialog = true
+      this.reservationToDelete = reservationId
+    },
+    async deleteReservation(): Promise<void> {
+      const responseStatus = await this.reservationsService.deleteReservation(this.reservationToDelete);
+
+      if (responseStatus === 200) {
+        this.deleteDialog = false
+        this.showLoadIcon = true
+        this.$emit('loadingStarted')
+        await this.reservationsService.getAllReservations().then((response) => {
+          this.reservations = response as Reservation[]
+        })
+        this.showLoadIcon = false
+        this.$emit('loadingCompleted')
+      } else {
+        console.log('Error deleting reservation')
+      }
+
+    },
+    //check if reservationId == activeUserStore.activeUser._id or if the user is an admin or if the user is a prof
+    checkIfAnnulable(reservation: Reservation): boolean {
+      return (
+        reservation.user._id === this.activeUserStore.getActiveUserMongoId() ||
+        this.activeUserStore.getActiveUserRole() === 'Admin' ||
+        this.activeUserStore.getActiveUserRole() === 'Prof'
+      )
     }
   },
   computed: {
@@ -424,8 +490,6 @@ export default {
       return dateList
     },
     checkIfUserIsAdmin(): boolean {
-      console.log(this.activeUserStore.getActiveUserRole())
-
       return this.activeUserStore.getActiveUserRole() === 'Admin'
     }
   }
@@ -434,24 +498,17 @@ export default {
 
 <style>
 table {
+  margin-bottom: 20px;
   display: block;
-  overflow-x: scroll;
+}
+
+.v-window__container{
+  width: 1250px;
 }
 
 .v-tooltip__content {
   background-color: white !important;
   color: white !important;
-}
-
-.v-window {
-  width: 100% !important;
-}
-
-.v-window-item {
-  width: 100% !important;
-  height: 100% !important;
-  display: flex;
-  justify-content: center;
 }
 
 .v-card {
@@ -506,11 +563,39 @@ table {
 }
 
 .listDiv {
-  width: 90vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .listDiv > h2 {
   text-align: center;
+}
+
+@media screen and (min-width: 1250px) {
+  
+}
+
+@media screen and (max-width: 1250px) {
+  .roomDiv {
+    background-color: #f5f5f5!important;
+  }
+  
+  .v-list {
+    background-color: #f5f5f5 !important;
+    padding: 0px !important;
+  }
+
+  .v-card {
+    padding: 2px !important;
+    width: 80vw;
+    max-width: 400px !important;
+  }
+
+  .v-input {
+    margin: 10px 0px 0px 0px!important;
+    max-width: 400px !important;
+  }
 }
 
 

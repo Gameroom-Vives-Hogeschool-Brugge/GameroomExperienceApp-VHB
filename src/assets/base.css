@@ -143,17 +143,16 @@ body {
 }
 
 input, select {
-  background-color: #EFEEE9 !important;
-  color: #A0A09F !important;
+  background-color: white !important;
+  color: black !important;
   padding: 8px !important;
-  margin: 5px 0 !important;
   border: 1px solid #DDD !important;
   box-sizing: border-box !important;
   width: 100% !important;
 }
 
 input:hover, select:hover {
-  background-color: #E2E0D9 !important;
+  background-color: #f7f3f3 !important;
 }
 
 h1 {

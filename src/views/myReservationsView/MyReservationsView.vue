@@ -9,10 +9,10 @@
             <h1>Mijn Reservaties</h1>
         </div>
         <div class="todayReservationsContainer">
-            <ReservationsListComponent :reservations="reservationsToday" :rooms="rooms" title="Mijn Reservaties Vandaag" :loading="loading"/>
+            <ReservationsListComponent @reservation-Deleted="reservationDeleted"  :reservations="reservationsToday" :rooms="rooms" title="Mijn Reservaties Vandaag" :loading="loading"/>
         </div>
         <div class="otherReservationsContainer">
-            <ReservationsListComponent :reservations="reservationsOther" :rooms="rooms" title="Mijn Toekomstige Reservaties" :loading="loading"/>
+            <ReservationsListComponent @reservation-Deleted="reservationDeleted"  :reservations="reservationsOther" :rooms="rooms" title="Mijn Toekomstige Reservaties" :loading="loading"/>
         </div>         
     </div>
 </template>
@@ -81,9 +81,7 @@ async mounted() {
     await this.roomsService.getAllRooms()
 
     // Fetch rooms
-    await this.roomsService.getRooms().then((response) => {
-        this.rooms = response as Room[]
-    })
+    this.rooms = this.roomsService.getRooms() as Room[]
 
     this.loading = false;
     this.showLoadIcon = false;
@@ -105,6 +103,11 @@ computed: {
     }  
 },
 methods: {
+    async reservationDeleted() : Promise<void> {
+        await this.reservationsService.getReservationsByUserId(this.activeUserStore.getActiveUser()._id).then((response) => {
+            this.reservations = response as Reservation[]
+        })
+    }
 }
 } 
 

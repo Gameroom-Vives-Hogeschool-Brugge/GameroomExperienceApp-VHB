@@ -9,7 +9,7 @@
             <h1>Reservaties</h1>
         </div>
         <div class="roomsComponentContainer">
-            <RoomsComponent :rooms="rooms" :loading="loading" @loading-Completed="loadingCompleted"  />
+            <RoomsComponent @loading-Started="loadingStarted" @loading-Completed="loadingCompleted" :rooms="rooms" :loading="loading"/>
         </div>
     </div>
     <div v-if="dialog" class="dialogContainer">
@@ -51,9 +51,7 @@ export default {
   async mounted() {
         await this.roomsService.getAllRooms()
 
-        await this.roomsService.getRooms().then((response) => {
-            this.rooms = response as Room[]
-        })
+        this.rooms = this.roomsService.getRooms() as Room[]
     },
     data: () => ({
         rooms: [] as Room[],
@@ -63,7 +61,8 @@ export default {
             reservationHour: '',
         } as unknown as SelectedTimeSlot,
       dialog: false,
-      loading: true
+      loading: true,
+      screenwidth: window.innerWidth
     }),
     methods: {
         navigateTo(route: string) {
@@ -73,11 +72,11 @@ export default {
                 this.$router.push("/NewReservation");
             }
         },
-        async submitReservation(submittedTimeSlot: SubmittedTimeSlot) : Promise<void> {
-            await this.reservationsService.createReservation(submittedTimeSlot).then(() => {
+        async submitReservation(submittedTimeSlot: SubmittedTimeSlot) : Promise<any> {
+            const responseStatus = await this.reservationsService.createReservation(submittedTimeSlot)
             this.dialog = false
-        })
 
+            return responseStatus
         },
         closeWindow() {
             this.dialog = false
@@ -94,10 +93,13 @@ export default {
         },
         loadingCompleted() {
             this.loading = false
+        },
+        loadingStarted() {
+            this.loading = true
         }
     },
     computed:{
-    }
+    },
 }
 
 
@@ -118,8 +120,10 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-wrap: wrap;
         height: 8vh;
         min-width: 300px;
+        width: 100vw;
     }
 
     .headingContainer {
@@ -136,10 +140,22 @@ export default {
         justify-content: center;
         height: 80vh;
         width: 100%;
-        padding-top: 2vh;
     }
 
     .backButton {
         margin-right: 10px;
+    }
+
+    @media (min-width: 1250px) {
+        .roomsComponentContainer {
+            padding-top: 2vh;
+        }
+    }
+
+    @media screen and (max-width: 1250px) {
+        .headingContainer {
+            padding-top: 1vh !important;
+        }
+        
     }
 </style>

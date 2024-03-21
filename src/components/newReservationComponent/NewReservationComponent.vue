@@ -48,6 +48,7 @@ import type { Room } from '@/models/Rooms'
 import type { ObjectId } from 'mongodb'
 import type { SelectedTimeSlot, CreatedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
 import moment from 'moment-timezone';
+import RoomsService from '@/services/roomsService'
 
 export default {
   name: 'NewReservationComponent',
@@ -70,11 +71,13 @@ export default {
     const router = useRouter()
     const activeUserStore = useActiveUserStore()
     const roomsStore = useRoomsStore()
+    const roomsService = new RoomsService()
 
     return {
       router,
       activeUserStore,
-      roomsStore
+      roomsStore,
+      roomsService
     }
   },
   data() {
@@ -98,7 +101,7 @@ export default {
         (v: any) => !!v || 'Duur is verplicht',
       ],
         firstHour: 8,
-        lastHour: 17
+        lastHour: 17,
     }
   },
   methods: {

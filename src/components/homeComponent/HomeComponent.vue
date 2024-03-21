@@ -5,8 +5,8 @@
 
   <div class="container">
     <div class="container1">
-      <h1>Welkom</h1>
-      <h2>Gelieve uw QR Code op uw studentenkaart te scannen.</h2>
+      <h1>Welkom op {{ title }}</h1>
+      <h2>Gelieve de QR Code op uw studentenkaart te scannen.</h2>
     </div>
     <div class="container2">
       <v-btn @click="navigateToQrCodeReader()" class="btn primary-color-btn">QR Code Scannen</v-btn>
@@ -50,11 +50,20 @@ export default {
       extra,
       activeUserStore
     };
+  },
+  data() {
+    return {
+      title: 'het Gameroom Experience Reservatie Systeem'
+    };
   }
 }
 </script>
 
 <style scoped>
+
+  h1 {
+    text-align: center;
+  }
 
   #close-btn {
     height: 50px !important;
@@ -62,10 +71,11 @@ export default {
   .container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
-    height: 100vh;
-    z-index: 2;
+    height: 90vh;
+    z-index: 0;
+    background-color: #f5f5f5;
   }
 
   .container1 {
@@ -99,15 +109,10 @@ export default {
     width: 100% !important;
     height: 20% !important;
   }
-
  
   .top-left-image-container {
-    position: absolute;
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    z-index: 0; 
+    height: 20vh;
+    background-color: #f5f5f5;
   }
 
   .top-left-image-container img {
@@ -116,6 +121,7 @@ export default {
     min-width: 150px;
     top: 0px;
     opacity: 0.3 !important;
+    z-index: 2;
   }
 
   .v-model {

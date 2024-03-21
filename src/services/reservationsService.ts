@@ -14,13 +14,15 @@ export default class reservationsService {
     this.activeUserStore = useActiveUserStore();
   }
 
+  // Get all reservations in the database
  async getAllReservations(): Promise<Reservation[]> {
     const reservationsResponse = await axios.get(this.reservationsApiLink)
     const reservations = reservationsResponse.data as Reservation[]
-
+    
     return reservations
  }
 
+ // Get all reservations for a specific user
  async getReservationsByUserId(userId: ObjectId): Promise<Reservation[]> {
     const reservationsResponse = await axios.post(this.myReservationsApiLink, {
       userId: userId
@@ -33,6 +35,7 @@ export default class reservationsService {
     return reservations
  }
 
+ // Delete a reservation by its id
  async deleteReservation(reservationId: ObjectId): Promise<number> {
     const body = {
       reservationId: reservationId
@@ -42,7 +45,8 @@ export default class reservationsService {
     return response.status
  }
 
- async createReservation(submittedTimeSlot : SubmittedTimeSlot): Promise<void> {
+ // Create a new reservation
+ async createReservation(submittedTimeSlot : SubmittedTimeSlot): Promise<number> {
     const user = this.activeUserStore.getActiveUser()
 
     const newReservation = {
@@ -52,14 +56,10 @@ export default class reservationsService {
       userId: user._id
     } as unknown as NewReservation
 
-    const responseStatus = await axios.post(this.reservationsApiLink, newReservation, {headers: {
+    const response = await axios.post(this.reservationsApiLink, newReservation, {headers: {
       "Content-Type": "application/json",
     }})
 
-    if (responseStatus.status !== 201) {
-      throw new Error("Failed to create reservation")
-    } else {
-      console.log("Reservation created")
-    }
+    return response.status
  }
 }

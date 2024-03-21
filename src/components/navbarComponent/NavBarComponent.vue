@@ -21,19 +21,22 @@ export default {
     };
   },
   created() {
+    //resize event listener
+    window.addEventListener('resize', () => {
+        this.screenWidth = window.innerWidth;
+    });
+
     setInterval(() => {
         this.currentTime = new Date().toLocaleTimeString();
     }, 1000);
   },
   data() {
     return {
-        currentTime: new Date().toLocaleTimeString()
+        currentTime: new Date().toLocaleTimeString(),
+        screenWidth: window.innerWidth
     }
   },
   computed: {
-    screenWidth() {
-        return window.innerWidth;
-    }
   }
 }
 
@@ -44,15 +47,17 @@ export default {
 #navBar {
     display: flex;
     justify-content: space-between;
+    height: 8vh;
+    max-height: 70px;
 }
 
 #navBarTitle {
-    padding: 2%;
+    padding: 1vh;
 }
 
 #navBarTime {
   text-align: right;
-  padding: 2%;
+  padding: 1vh;
 }
 
 </style>

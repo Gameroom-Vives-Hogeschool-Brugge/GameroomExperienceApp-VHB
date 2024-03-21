@@ -19,7 +19,7 @@ export default class RoomsService {
     this.roomsStore.setRooms(rooms)
   }
 
-  async getRooms(): Promise<Room[]> {
+  getRooms(): Room[] {
     return this.roomsStore.getRooms()
   }
 

@@ -13,7 +13,7 @@
             <v-card-subtitle> Starttijd: {{ formatDate(new Date(reservation.date)) }} </v-card-subtitle>
             <v-card-subtitle> Eindtijd: {{ formatDate(calculatEndTime(reservation)) }} </v-card-subtitle>
             <v-card-actions>
-                <v-btn color="error" variant="outlined" @click="deleteReservation(reservation._id)">Annuleren</v-btn>
+                <v-btn color="error" variant="outlined" @click="openDeleteDialog(reservation._id)">Annuleren</v-btn>
             </v-card-actions>
           </v-card-item>
         </v-card>
@@ -32,6 +32,16 @@
             ></v-progress-circular>
             </v-overlay>
     </div>
+
+    <v-dialog v-model="deleteDialog" max-width="500">
+      <v-card>
+        <v-card-title>Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
+        <v-card-actions>
+          <v-btn color="error" @click="deleteDialog = false">Nee</v-btn>
+          <v-btn color="error" @click="deleteReservation()">Ja</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -77,12 +87,13 @@ export default {
   },
   data() {
     return {
-      showLoadIcon: true
+      showLoadIcon: true,
+      deleteDialog: false,
+      reservationToDelete: null as unknown as ObjectId
     }
   },
   methods: {
     formatDate(date: Date) : string {
-      //format to dd/mm/yyyy HH:mm
       return moment(date).tz("Europe/Brussels").format('DD/MM/YYYY HH:mm')
     },
     calculatEndTime(reservation: Reservation) : Date {
@@ -99,13 +110,19 @@ export default {
 
       return difference
     },
-    async deleteReservation(reservationId: ObjectId) {
-      const responseStatus = await this.reservationsService.deleteReservation(reservationId)
+    openDeleteDialog(reservationId: ObjectId) {
+      this.deleteDialog = true
+      this.reservationToDelete = reservationId
+    },
+    async deleteReservation() {
+      const responseStatus = await this.reservationsService.deleteReservation(this.reservationToDelete as ObjectId)
       if (responseStatus == 200) {
-        console.log('reservation deleted')
+        this.$emit('reservationDeleted')
       } else {
         console.log('error deleting reservation')
       }
+
+      this.deleteDialog = false
     }
   },
   computed: {
