@@ -8,16 +8,20 @@
         @click="navigateTo('PersonalPage')"
         >Terug</v-btn
       >
-      <v-btn class="btn primary-color-btn" @click="navigateTo('Reservations')"
-        >Maak Nieuwe Reservatie</v-btn
+      <v-btn class="btn primary-color-btn" @click=" displayUsers()"
+        >Toon Gebruikers</v-btn>
+      <v-btn class="btn primary-color-btn" @click="displayReservations()"
+        >Toon Reservaties</v-btn>
+      <v-btn class="btn primary-color-btn" @click="displayLogs()"
+        >Toon Logs</v-btn
       >
     </div>
     <div class="headerContainer">
-      <h1>Admin Paneel</h1>
+      <h1>Admin Paneel | {{ shownContainer }}</h1>
     </div>
 
     <div class="container">
-      <div class="container1">
+      <div  v-if="showUsers" class="users">
         <div class="container3">
           <!-- A list with all the students -->
           <UsersListComponent
@@ -30,7 +34,7 @@
           <!-- A list with all the exceptions -->
           <UsersListComponent
             :users="getProfs"
-            title="Profs"
+            title="Proffen"
             :roles="roles"
             :types="types"
             :courses="courses"
@@ -50,11 +54,17 @@
           <!-- choose between role: admin, prof or student-->
         </div>
       </div>
-      <div class="container3">
-        <div class="container5">
-          <!-- A list with all the reservations -->
-          <!-- ability to change the information of a reservation-->
-          <!-- ability to delete a reservation-->
+      <div v-if="showReservations" class="reservations">
+        <div v-for="room of rooms" :key="room._id.toString()" class="container5">
+          <ReservationsListComponent
+            @reservation-Deleted="reservationDeleted"
+            :reservations="filterReservationsOnRoomId(room._id as ObjectId)"
+            :rooms="[room]"
+            :title="room.description "
+            :loading="loading"
+            :nameGiven="true"
+            
+          />
         </div>
         <div class="container6">
           <!-- Ability to add a reservation-->
@@ -63,6 +73,20 @@
           <!-- choose a date-->
           <!-- choose a time-->
         </div>
+      </div>
+      <div v-if="showLogs && !loading" class="logs">
+          <v-select
+              label="Select"
+              :items="logFiles"
+              :item-title="item => item.name"
+              :item-value="item => item"
+              v-model="selectedLogFile"
+          ></v-select>
+        <div v-if="selectedLogFile" class="container7">
+          <LogsListComponent :logFile="selectedLogFile" :loading="loading" />
+        </div>
+        
+        <!-- A list with all the logs of that category -->
       </div>
     </div>
   </div>
@@ -74,35 +98,52 @@ import { useRouter } from 'vue-router'
 //components
 import NavBarComponent from '@/components/navbarComponent/NavBarComponent.vue'
 import UsersListComponent from '@/components/usersListComponent/UsersListComponent.vue'
+import ReservationsListComponent from '@/components/reservationsListComponent/ReservationsListComponent.vue'
+import LogsListComponent from '@/components/logsListComponent/LogListComponent.vue'
 
 //services
 import ReservationsService from '@/services/reservationsService'
 import RoomsService from '@/services/roomsService'
+import AdminService from '@/services/adminService'
+import LoggerService from "@/services/loggerService"
 
 //models
 import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
+import type { LogFile } from '@/models/logFile'
 import { ObjectId } from 'mongodb'
-import AdminService from '@/services/adminService'
 import type { FullUser, UserCourse, UserRole, UserType } from '@/models/activeUser'
+
+//stores
+import { useActiveUserStore } from '@/stores/activeUserStore'
 
 export default {
   name: 'AdminsView',
   components: {
     NavBarComponent,
-    UsersListComponent
+    UsersListComponent,
+    ReservationsListComponent,
+    LogsListComponent
   },
   setup() {
     const router = useRouter()
+
+    //services
     const reservationsService = new ReservationsService()
     const roomsService = new RoomsService()
     const adminService = new AdminService()
+    const loggerService = new LoggerService()
+
+    //stores
+    const activeUserStore = useActiveUserStore()
 
     return {
       router,
       reservationsService,
       roomsService,
-      adminService
+      adminService,
+      loggerService,
+      activeUserStore
     }
   },
   data() {
@@ -113,8 +154,15 @@ export default {
       types: [] as UserType[],
       roles: [] as UserRole[],
       courses: [] as UserCourse[],
+      logFiles: [{}] as LogFile[],
+      selectedLogFile: {} as LogFile,
       loadReservations: true,
-      loadRooms: true
+      loadRooms: true as boolean,
+      showUsers: true as boolean,
+      showReservations: false as boolean,
+      showLogs: false,
+      loading: true,
+      showLoadIcon: true
     }
   },
   async mounted() {
@@ -129,6 +177,13 @@ export default {
     this.types = (await this.adminService.getAllTypes()) as UserType[]
     this.roles = (await this.adminService.getAllRoles()) as UserRole[]
     this.courses = (await this.adminService.getAllCourses()) as UserCourse[]
+
+    //get all logs
+    this.logFiles = await this.loggerService.getAllLogs() as LogFile[]
+    this.selectedLogFile = this.logFiles[0] as LogFile
+
+    this.loading = false;
+    this.showLoadIcon = false;
   },
   computed: {
     getStudents(): FullUser[] {
@@ -151,6 +206,17 @@ export default {
 
       //filter the users to only get the exceptions
       return this.users.filter((user) => user.type === typeId)
+    },
+    shownContainer() : string {
+      if (this.showUsers) {
+        return 'Alle Gebruikers'
+      } else if (this.showReservations) {
+        return 'Alle Reservaties'
+      } else if (this.showLogs) {
+        return 'Alle Logs'
+      } else {
+        return ''
+      }
     }
   },
   methods: {
@@ -163,6 +229,29 @@ export default {
     },
     async createReservation() {
       this.router.push('/NewReservation')
+    },
+    displayLogs(): void {
+      this.showUsers = false
+      this.showReservations = false
+      this.showLogs = true
+    },
+    displayUsers(): void {
+      this.showUsers = true
+      this.showReservations = false
+      this.showLogs = false
+    },
+    displayReservations(): void {
+      this.showUsers = false
+      this.showReservations = true
+      this.showLogs = false
+    },
+    filterReservationsOnRoomId(roomId: ObjectId): Reservation[] {
+      return this.reservations.filter((reservation) => reservation.room._id === roomId)
+    },
+    async reservationDeleted() : Promise<void> {
+        await this.reservationsService.getReservationsByUserId(this.activeUserStore.getActiveUser()._id).then((response) => {
+            this.reservations = response as Reservation[]
+        })
     }
   }
 }
@@ -190,6 +279,10 @@ navbarComponent {
     width: 100%;
 }
 
+.buttonContainer > .btn {
+    margin: 0 5px;
+}
+
 .headingContainer {
         display: flex;
         align-items: center;
@@ -198,20 +291,26 @@ navbarComponent {
         width: 100%;
 }
 
+.headingContainer > h1 {
+    text-align: center;
+}
+
 .container {
   display: flex;
   justify-content: start;
   padding-top: 0px !important;
   align-items: start !important;
-  border: 1px solid black;
+  margin-top: 10px;
+  background-color: white;
 }
 
-.container1 {
-  width: 50vw;
-  border: 1px solid black;
+.users {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
 }
 
-.container2 {
-  width: 80%;
-}
 </style>

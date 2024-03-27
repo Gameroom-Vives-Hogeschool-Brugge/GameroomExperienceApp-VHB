@@ -10,6 +10,7 @@
             variant="outlined">
           <v-card-item>
             <v-card-title> {{ reservation.room.description }} </v-card-title>
+            <v-card-subtitle v-if="nameGiven"> {{ reservation.user.firstName }} {{ reservation.user.lastName }} </v-card-subtitle>
             <v-card-subtitle> Starttijd: {{ formatDate(new Date(reservation.date)) }} </v-card-subtitle>
             <v-card-subtitle> Eindtijd: {{ formatDate(calculatEndTime(reservation)) }} </v-card-subtitle>
             <v-card-actions>
@@ -76,6 +77,10 @@ export default {
     loading: {
       type: Boolean,
       required: true
+    },
+    nameGiven: {
+      type: Boolean,
+      required: false
     }
   },
   setup() {
@@ -123,11 +128,9 @@ export default {
       }
 
       this.deleteDialog = false
-    }
-  },
-  computed: {
+    },
     
-  }
+  },
 }
 </script>
 
@@ -160,6 +163,10 @@ export default {
   position: relative;
   display: flex;
   justify-content: center;
+}
+
+.v-card {
+  max-height: 200px !important;
 }
 
 .v-card-actions {

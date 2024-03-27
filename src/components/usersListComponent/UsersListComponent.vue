@@ -9,7 +9,7 @@
                     <v-list-item-subtitle><strong>Id Nummer: </strong>{{ user.idNumber }}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Email: </strong>{{ user.email }}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Type: </strong>{{ getTypeDescription(user.type) }}</v-list-item-subtitle>
-                    <v-list-item-subtitle v-if="title != 'Profs'"><strong>Opleiding: </strong>{{ getCourseDescription(user.course)}}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="title != 'Proffen'"><strong>Opleiding: </strong>{{ getCourseDescription(user.course)}}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Rol: </strong>{{ getRoleDescription(user.role) }}</v-list-item-subtitle>
                     <div class="buttons">
                         <!-- ability to change the information of a user-->
@@ -154,6 +154,12 @@ import { ObjectId } from 'mongodb'
         width: 500px;
     }
 
+    .v-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
     .v-card {
         display: flex;
         flex-direction: column;
@@ -162,12 +168,18 @@ import { ObjectId } from 'mongodb'
 
     .v-container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
     }
 
     .v-list-item {
         margin-top: 5px;
+        width: 40vw;
+        min-width: 400px ;
+        max-width: 500px;
+        border: 1px solid black;
+        border-radius: 5px;
+        margin: 10px;
     }
 
     .v-list-item-subtitle{

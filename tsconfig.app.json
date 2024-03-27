@@ -10,7 +10,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "include": [
-        "src/services/LoginService.ts"
+        "src/services/LoginService.ts",
     ]
     }
   }
