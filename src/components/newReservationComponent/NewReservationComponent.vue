@@ -45,7 +45,7 @@ import { useRouter } from 'vue-router'
 import { useActiveUserStore } from '../../stores/activeUserStore'
 import { useRoomsStore } from '../../stores/roomsStore'
 import type { Room } from '@/models/Rooms'
-import type { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 import type { SelectedTimeSlot, CreatedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
 import moment from 'moment-timezone';
 import RoomsService from '@/services/roomsService'

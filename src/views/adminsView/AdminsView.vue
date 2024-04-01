@@ -111,7 +111,7 @@ import LoggerService from "@/services/loggerService"
 import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
 import type { LogFile } from '@/models/logFile'
-import { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 import type { FullUser, UserCourse, UserRole, UserType } from '@/models/activeUser'
 
 //stores

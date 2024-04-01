@@ -29,7 +29,7 @@ import NewReservationComponent from '../../components/newReservationComponent/Ne
 import RoomsService from '@/services/roomsService'
 import ReservationsService from '@/services/reservationsService'
 import { useRouter } from 'vue-router'
-import { ObjectId } from "mongodb";
+import type { ObjectId } from 'bson'
 
 export default {
     components: {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import HomeComponent from './HomeComponent.vue';
-import QRCodeReader from '../QRCodeReader.vue';
+import QRCodeReader from '../qRCodeReader/QRCodeReader.vue'
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Define a simple set of routes for testing purposes

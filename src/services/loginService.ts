@@ -9,7 +9,7 @@ export default class LoginService {
   encryptionService: EncryptionService
 
   constructor() {
-    this.apiLink = 'http://localhost:3000/login'
+    this.apiLink = import.meta.env.VITE_LOGING_URL
     this.activeUserStore = useActiveUserStore();
     this.encryptionService = new EncryptionService()
   }

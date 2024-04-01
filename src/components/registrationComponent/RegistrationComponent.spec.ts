@@ -1,8 +1,8 @@
 //make test 
 
 import RegistrationComponent from "./RegistrationComponent.vue";
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { shallowMount ,mount, flushPromises } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
+import { shallowMount ,mount } from '@vue/test-utils';
 
 describe("RegistrationComponent", () => {
   it("should render the component", () => {

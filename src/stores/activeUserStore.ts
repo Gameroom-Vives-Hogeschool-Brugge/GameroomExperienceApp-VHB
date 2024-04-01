@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { ActiveUser } from '@/models/activeUser'
-import type { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 
 export const useActiveUserStore = defineStore('activeUserStore', () => {
   const activeUser = ref({} as ActiveUser)

@@ -44,7 +44,7 @@
 <script lang="ts">
 //models
 import type { FullUser, UserCourse, UserRole, UserType } from '@/models/activeUser'
-import { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 
 //services
 

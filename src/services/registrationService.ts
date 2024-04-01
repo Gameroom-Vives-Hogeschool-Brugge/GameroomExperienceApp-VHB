@@ -6,14 +6,16 @@ import EncryptionService from "./encryptionService";
 export default class RegistrationService {
     activeUserStore: any;
     encryptionService: EncryptionService;
+    registrationsApiLink: string;
     
     constructor() {
         this.activeUserStore = useActiveUserStore();
         this.encryptionService = new EncryptionService();
+        this.registrationsApiLink = import.meta.env.VITE_REGISTRATIONs_URL;
     }
 
     async getRegistrations(): Promise<RegistrationPerson[]> {
-        const response = await axios.get("http://localhost:3000/registrations", {
+        const response = await axios.get(this.registrationsApiLink, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -25,7 +27,7 @@ export default class RegistrationService {
     }
 
     async registerPerson(person: RegistrationPerson | null): Promise<Boolean> {
-        const response = await axios.post("http://localhost:3000/registrations", 
+        const response = await axios.post(this.registrationsApiLink, 
         {
             person: person,
             cardNumber: this.activeUserStore.getTemporaryCardNumber(),

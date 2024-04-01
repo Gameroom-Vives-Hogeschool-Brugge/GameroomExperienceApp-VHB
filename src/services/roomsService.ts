@@ -1,14 +1,14 @@
 import axios from 'axios'
 import { useRoomsStore } from '@/stores/roomsStore'
 import type { Room } from '@/models/Rooms'
-import type { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 
 export default class RoomsService {
   roomsApiLink: string
   roomsStore: ReturnType<typeof useRoomsStore>
 
   constructor() {
-    this.roomsApiLink = 'http://localhost:3000/rooms'
+    this.roomsApiLink = import.meta.env.VITE_ROOMS_URL
     this.roomsStore = useRoomsStore()
   }
 

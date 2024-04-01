@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import type { ObjectId } from 'bson'
 import type { Room } from './Rooms';
 import type { User } from './activeUser';
 

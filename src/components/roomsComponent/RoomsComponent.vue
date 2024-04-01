@@ -224,7 +224,7 @@ import ReservationsService from '@/services/reservationsService'
 import type { Room } from '@/models/Rooms'
 import type { Reservation, SelectedTimeSlot, SubmittedTimeSlot } from '@/models/Reservations'
 import NewReservationComponent from '../newReservationComponent/NewReservationComponent.vue'
-import { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 import RoomsService from '@/services/roomsService'
 import moment from 'moment-timezone'
 

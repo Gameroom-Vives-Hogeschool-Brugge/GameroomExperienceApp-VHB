@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useActiveUserStore} from '@/stores/activeUserStore'
 import type { Reservation, SubmittedTimeSlot, NewReservation } from "@/models/Reservations";
-import type { ObjectId } from "mongodb";
+import type { ObjectId } from 'bson'
 
 export default class reservationsService {
   reservationsApiLink: string
@@ -9,8 +9,8 @@ export default class reservationsService {
   activeUserStore: ReturnType<typeof useActiveUserStore>
 
   constructor() {
-    this.reservationsApiLink = 'http://localhost:3000/reservations'
-    this.myReservationsApiLink = 'http://localhost:3000/myReservations'
+    this.reservationsApiLink = import.meta.env.VITE_RESERVATIONS_URL
+    this.myReservationsApiLink = import.meta.env.VITE_MY_RESERVATIONS_URL
     this.activeUserStore = useActiveUserStore();
   }
 

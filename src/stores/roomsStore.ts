@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Room } from '@/models/Rooms'
-import type { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 
 export const useRoomsStore = defineStore(
   'roomsStore',

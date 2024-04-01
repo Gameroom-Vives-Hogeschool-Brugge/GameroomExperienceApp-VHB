@@ -1,11 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import MyReservationComponent from '@/components/myReservationsComponent/MyReservationComponent.vue'
+import MyReservationView from '../../views/myReservationsView/MyReservationsView.vue'
 import PersonalPageComponent from '../personalPageComponent/PersonalPageComponent.vue';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
-    { path: '/MyReservations', name: 'MyReservationsComponent', component: MyReservationComponent },
+    { path: '/MyReservations', name: 'MyReservationsComponent', component: MyReservationView },
     { path: '/PersonalPage', name: 'PersonalPageComponent', component: PersonalPageComponent },
 ];
 
@@ -22,7 +22,7 @@ describe('MyReservationComponent Navigation', () => {
     });
 
     it('navigates to PersonalPageComponent when backbutton is clicked', async () => {
-        const wrapper = mount(MyReservationComponent, {
+        const wrapper = mount(MyReservationView, {
             global: {
                 plugins: [router]
             }

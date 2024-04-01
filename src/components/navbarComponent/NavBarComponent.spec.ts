@@ -7,12 +7,18 @@ describe('NavBarComponent Content', () => {
     it('Renders the Users Name', () => {
         const wrapper = mount(NavBarComponent,
             {
-                data(): Partial<{ firstName: string; lastName: string; }> {
-                    return {
-                        firstName: "Olivier",
-                        lastName: "Van Ransbeeck"
+                global: {
+                    mocks: {
+                        $store: {
+                            state: {
+                                activeUser: {
+                                    firstName: "Olivier",
+                                    lastName: "Van Ransbeeck"
+                                }
+                            }
+                        }
                     }
-                },                
+                }              
             });
         expect(wrapper.html()).toContain("Welkom Olivier Van Ransbeeck")
         wrapper.unmount();

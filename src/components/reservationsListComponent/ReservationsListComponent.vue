@@ -50,7 +50,7 @@
 //types
 import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
-import type { ObjectId } from 'mongodb'
+import type { ObjectId } from 'bson'
 
 //moment
 import moment from 'moment-timezone';

@@ -12,7 +12,7 @@ export default class LoggerService {
     encryptionService: EncryptionService
 
     constructor() {
-        this.apiLink = 'http://localhost:3000/logfiles'
+        this.apiLink = import.meta.env.VITE_LOGFILES_URL
         this.encryptionService = new EncryptionService()
       }
 
