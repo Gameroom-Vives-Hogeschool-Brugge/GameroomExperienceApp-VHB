@@ -54,6 +54,7 @@
         id="routeToAdminsView"
         @click="navigateTo('AdminsView')"
         class="btn secondary-color-btn"
+        v-if="isAdmin" 
         >Admin Paneel</v-btn
       >
     </div>
@@ -125,8 +126,7 @@ export default {
       } else if (route == 'ReservationsView') {
         router.push('/Reservations')
       } else if (route == 'AdminsView') {
-        if (activeUserStore.activeUser.role == 'Student') //change later to 'admin'
-          { router.push('/Admins') }
+        router.push('/Admins')
       }
     }
 
@@ -163,6 +163,9 @@ export default {
     }
   },
   computed: {
+    isAdmin(): boolean {
+      return this.activeUserStore.activeUser.role === 'Admin'
+    }
   },
   methods: {
     async openDoor(): Promise<void> {

@@ -54,13 +54,16 @@ router.beforeEach((to) => {
 
   // If the user is not logged in and tries to access a page that requires authentication, redirect to the home page
   if (to.name === 'RegistrationComponent' && ( activeUserStore.getTemporaryCardNumber() === "" || activeUserStore.getActiveUserSelected())){
-    console.log("REDIRECTED")
     return { name: 'home' }
+  }
+
+  //if to admin page and not admin
+  if (to.name === 'AdminsView' && !(activeUserStore.getActiveUserRole() === "Admin")) {
+    return { name: 'PersonalPageComponent' }
   }
 
   if (to.name !== 'QrcodeReader' && to.name !== 'home' && to.name !== 'RegistrationComponent') {
     if (!activeUserStore.getActiveUserSelected()) {
-      console.log("No Active User")
       return { name: 'home' }
     }
   }

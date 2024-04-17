@@ -20,11 +20,34 @@
       <h1>Admin Paneel | {{ shownContainer }}</h1>
     </div>
 
+    <div class="alerts">
+      <!-- Alerts for the user creation -->
+    <v-alert
+      v-if="unsuccesfulUserCreation"
+      text="Gebruiker kon niet aangemaakt worden. Probeer opnieuw."
+      title="Gebruiker niet aangemaakt"
+      type="error"
+      ></v-alert>
+      <v-alert
+      v-if="succesfulUserCreation"
+      text="Gebruiker is succesvol aangemaakt."
+      title="Gebruiker aangemaakt"
+      type="success"
+      ></v-alert>
+      <!-- Alerts for the user deletion -->
+
+      <!-- Alerts for the user saving -->
+    </div>
+
     <div class="container">
       <div  v-if="showUsers" class="users">
+        <v-btn class="btn create-color-btn" @click="createUserToggle = !createUserToggle"
+            >Maak Gebruiker</v-btn>
         <div class="container3">
           <!-- A list with all the students -->
           <UsersListComponent
+            @delete-user="deleteUser"
+            @update-edited-user="updateEditedUser"
             :users="getStudents"
             title="Studenten"
             :roles="roles"
@@ -33,6 +56,8 @@
           />
           <!-- A list with all the exceptions -->
           <UsersListComponent
+            @delete-user="deleteUser"
+            @update-edited-user="updateEditedUser"
             :users="getProfs"
             title="Proffen"
             :roles="roles"
@@ -41,6 +66,8 @@
           />
           <!-- A list with all the profs -->
           <UsersListComponent
+            @delete-user="deleteUser"
+            @update-edited-user="updateEditedUser"
             :users="getExceptions"
             title="Uitzonderingen"
             :roles="roles"
@@ -48,10 +75,16 @@
             :courses="courses"
           />
         </div>
-        <div class="container4">
-          <!-- Ability to add a person-->
-          <!-- choose between type: student, exception or prof-->
-          <!-- choose between role: admin, prof or student-->
+        <div v-if="createUserToggle" class="container4">
+          <v-dialog v-model="createUserToggle">
+            <CreateUserComponent 
+              @close-dialog="closeDialog"
+              @create-user="createUser"
+              :createUserToggle="createUserToggle"
+              :types="types" :roles="roles" 
+              :courses="courses"
+            />
+          </v-dialog>  
         </div>
       </div>
       <div v-if="showReservations" class="reservations">
@@ -100,6 +133,7 @@ import NavBarComponent from '@/components/navbarComponent/NavBarComponent.vue'
 import UsersListComponent from '@/components/usersListComponent/UsersListComponent.vue'
 import ReservationsListComponent from '@/components/reservationsListComponent/ReservationsListComponent.vue'
 import LogsListComponent from '@/components/logsListComponent/LogListComponent.vue'
+import CreateUserComponent from '@/components/createUserComponent/CreateUserComponent.vue'
 
 //services
 import ReservationsService from '@/services/reservationsService'
@@ -112,7 +146,7 @@ import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
 import type { LogFile } from '@/models/logFile'
 import type { ObjectId } from 'bson'
-import type { FullUser, UserCourse, UserRole, UserType } from '@/models/activeUser'
+import type { FullUser, UserCourse, UserRole, UserType, CreateUser } from '@/models/activeUser'
 
 //stores
 import { useActiveUserStore } from '@/stores/activeUserStore'
@@ -123,7 +157,8 @@ export default {
     NavBarComponent,
     UsersListComponent,
     ReservationsListComponent,
-    LogsListComponent
+    LogsListComponent,
+    CreateUserComponent
   },
   setup() {
     const router = useRouter()
@@ -162,7 +197,10 @@ export default {
       showReservations: false as boolean,
       showLogs: false,
       loading: true,
-      showLoadIcon: true
+      showLoadIcon: true,
+      createUserToggle: false,
+      succesfulUserCreation: false,
+      unsuccesfulUserCreation: false
     }
   },
   async mounted() {
@@ -252,6 +290,69 @@ export default {
         await this.reservationsService.getReservationsByUserId(this.activeUserStore.getActiveUser()._id).then((response) => {
             this.reservations = response as Reservation[]
         })
+    },
+    closeDialog() {
+      this.createUserToggle = false
+    },
+    async createUser(user: CreateUser) {
+      const response = await this.adminService.createUser(user)
+
+      if (response == 201) {
+        //for 2 seconds show the succesfulUserCreation alert
+        this.succesfulUserCreation = true
+        this.createUserToggle = false
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.succesfulUserCreation = false
+
+        await this.adminService.getAllUsers().then((response) => {
+          this.users = response as FullUser[]
+        })
+
+      } else {
+        //for 2 seconds show the unsuccesfulUserCreation alert
+        this.unsuccesfulUserCreation = true
+        this.createUserToggle = false
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.unsuccesfulUserCreation = false
+      }
+    },
+    async deleteUser(userId: ObjectId) {
+      const response = await this.adminService.deleteUser(userId)
+
+      if (response == 200) {
+        //for 2 seconds show the succesfulUserCreation alert
+        this.succesfulUserCreation = true
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.succesfulUserCreation = false
+
+        await this.adminService.getAllUsers().then((response) => {
+          this.users = response as FullUser[]
+        })
+      } else {
+        //for 2 seconds show the unsuccesfulUserCreation alert
+        this.unsuccesfulUserCreation = true
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.unsuccesfulUserCreation = false
+      }
+    },
+    async updateEditedUser(editedUser: FullUser) {
+      const response = await this.adminService.updateUser(editedUser)
+
+      if (response == 200) {
+        //for 2 seconds show the succesfulUserCreation alert
+        this.succesfulUserCreation = true
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.succesfulUserCreation = false
+
+        await this.adminService.getAllUsers().then((response) => {
+          this.users = response as FullUser[]
+        })
+      } else {
+        //for 2 seconds show the unsuccesfulUserCreation alert
+        this.unsuccesfulUserCreation = true
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        this.unsuccesfulUserCreation = false
+      }
     }
   }
 }
@@ -312,5 +413,21 @@ navbarComponent {
   justify-content: center;
   background-color: white;
 }
+
+.alerts {
+    z-index: 2;
+    position: sticky;
+    display: flex;
+    top: 10vh;  
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .v-alert {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+  }
 
 </style>

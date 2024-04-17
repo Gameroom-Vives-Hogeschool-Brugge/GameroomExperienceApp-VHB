@@ -4,7 +4,7 @@
             <h2>{{ title }}</h2>
         </div>
         <v-list>
-                <v-list-item v-for="user in users" :key="user._id.toString()" @click=editUser(user)>
+                <v-list-item v-for="user in users" :key="user._id.toString()">
                     <v-list-item-title>{{ user.firstName }} {{ user.lastName }}</v-list-item-title>
                     <v-list-item-subtitle><strong>Id Nummer: </strong>{{ user.idNumber }}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Email: </strong>{{ user.email }}</v-list-item-subtitle>
@@ -50,7 +50,7 @@ import type { ObjectId } from 'bson'
 
 //components
 
-//
+
     export default {
         name: 'UsersListComponent',
         components: {
@@ -77,6 +77,7 @@ import type { ObjectId } from 'bson'
                 required: true
             }
         },
+        emits: ['delete-user', 'update-editedUser'],
         setup() {
             return {
             }
@@ -116,16 +117,22 @@ import type { ObjectId } from 'bson'
                 this.editDialog = true
             },
             deleteUser (userId: ObjectId) {
-                console.log(userId)
+                this.$emit('delete-user', userId)
             },
             saveUser () {
-                console.log(this.firstName)
-                console.log(this.lastName)
-                console.log(this.idNumber)
-                console.log(this.email)
-                console.log(this.type)
-                console.log(this.course)
-                console.log(this.role)
+                const editedUser = {
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    idNumber: this.idNumber,
+                    email: this.email,
+                    type: this.type,
+                    course: this.course,
+                    role: this.role
+                }
+
+                this.$emit('update-editedUser', editedUser)
+
+                this.editDialog = false
             }
         }
     }
@@ -168,7 +175,7 @@ import type { ObjectId } from 'bson'
 
     .v-container {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
     }
 

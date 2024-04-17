@@ -21,8 +21,6 @@ export default class LoggerService {
         const encryptedData = response.data
         const data = this.encryptionService.decryptObject(encryptedData) as [LogFile]
 
-        console.log(data)
-
         return data
     }
 }

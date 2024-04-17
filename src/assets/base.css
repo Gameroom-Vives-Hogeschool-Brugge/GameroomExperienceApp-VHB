@@ -138,6 +138,22 @@ body {
   border-width: 1px !important;
 }
 
+.create-color-btn {
+  color: #4CAF50 !important;
+  background-color: #FFFFFF !important;
+  border: #4CAF50 !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+
+.create-color-btn:hover {
+  color: #4CAF50 !important;
+  background-color: #f7f3f3 !important;
+  border: #4CAF50 !important;
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+
 .message, h2, p, title {
   color: #1D1D1B !important;
 }

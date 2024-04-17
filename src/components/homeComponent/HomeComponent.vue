@@ -24,6 +24,15 @@
       </v-btn>
     </div>
   </div>
+  <div class="alerts">
+    <v-alert
+    v-if="bruggeError"
+    text="Je lijkt geen student van Brugge te zijn. Gelieve contact op te nemen via de 'Hulp Nodig' knop onderaan."
+    title="Geen student van Brugge?"
+    type="error"
+    ></v-alert>
+  </div>
+  
 
 </template>
 
@@ -53,7 +62,8 @@ export default {
   },
   data() {
     return {
-      title: 'het Gameroom Experience Reservatie Systeem'
+      title: 'het Gameroom Experience Reservatie Systeem',
+      bruggeError: false
     };
   }
 }
@@ -68,6 +78,7 @@ export default {
   #close-btn {
     height: 50px !important;
   }
+
   .container {
     display: flex;
     flex-direction: column;
@@ -128,5 +139,22 @@ export default {
     width: 50%;
     min-height: 500px;
   }
+
+  .alerts {
+    z-index: 2;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .v-alert {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+  }
+
+
 
 </style>

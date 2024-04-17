@@ -45,3 +45,14 @@ export interface UserCourse {
     description: string;
     location: string;
 }
+
+export interface CreateUser {
+    idNumber: string;
+    cardNumber: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    course: ObjectId;
+    role: ObjectId;
+    type: ObjectId;
+}

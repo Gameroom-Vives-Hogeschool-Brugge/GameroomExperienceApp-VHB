@@ -1,5 +1,11 @@
+//services
 import EncryptionService from './encryptionService'
-import type { FullUser, UserRole, UserCourse, UserType } from '@/models/activeUser'
+
+//models
+import type { FullUser, UserRole, UserCourse, UserType, CreateUser } from '@/models/activeUser'
+import type { ObjectId } from 'bson'
+
+//imports
 import axios, { type AxiosResponse } from 'axios'
 
 export default class AdminService {
@@ -25,6 +31,54 @@ export default class AdminService {
         const users = this.encryptionService.decryptObject(response.data) as FullUser[]
         
         return users
+    }
+
+    async createUser(createUser : CreateUser): Promise<number> {
+        //encrypt the user object
+        const encryptedUser = this.encryptionService.encryptObject(createUser)
+
+        //post request to the server
+        const response = await axios.post(this.usersApiLink,  {encryptedUser: encryptedUser}, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+
+        //check if the response is successful
+        return response.status
+    }
+
+    async deleteUser(userId: ObjectId): Promise<number> {
+        //encrypt the user object
+        const encryptedUserId = this.encryptionService.encrypt(userId.toString())
+
+        //delete request to the server
+        const response = await axios.delete(this.usersApiLink, {
+            data: {
+                encryptedUserId: userId
+            },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+
+        //check if the response is successful
+        return response.status
+    }
+
+    async updateUser(user: FullUser): Promise<number> {
+        //encrypt the user object
+        const encryptedUser = this.encryptionService.encryptObject(user)
+
+        //put request to the server
+        const response = await axios.put(this.usersApiLink, {encryptedUser: encryptedUser}, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+
+        //check if the response is successful
+        return response.status
     }
 
     async getAllTypes(): Promise<UserType[]> {
