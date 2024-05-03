@@ -1,12 +1,12 @@
 import { mount, flushPromises } from '@vue/test-utils'
 import MyReservationView from '../../views/myReservationsView/MyReservationsView.vue'
-import PersonalPageComponent from '../personalPageComponent/PersonalPageComponent.vue';
+import PersonalPageView from '../../views/personalPageView/PersonalPageView.vue';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
     { path: '/MyReservations', name: 'MyReservationsComponent', component: MyReservationView },
-    { path: '/PersonalPage', name: 'PersonalPageComponent', component: PersonalPageComponent },
+    { path: '/PersonalPage', name: 'PersonalPageView', component: PersonalPageView },
 ];
 
 const router = createRouter({
@@ -21,7 +21,7 @@ describe('MyReservationComponent Navigation', () => {
         await router.isReady();
     });
 
-    it('navigates to PersonalPageComponent when backbutton is clicked', async () => {
+    it('navigates to PersonalPageView when backbutton is clicked', async () => {
         const wrapper = mount(MyReservationView, {
             global: {
                 plugins: [router]
@@ -30,7 +30,7 @@ describe('MyReservationComponent Navigation', () => {
 
         await wrapper.find('#routeToPersonalPage').trigger('click');
         await flushPromises();
-        expect(router.currentRoute.value.name).toBe("PersonalPageComponent");
+        expect(router.currentRoute.value.name).toBe("PersonalPageView");
         wrapper.unmount();
     });
 
