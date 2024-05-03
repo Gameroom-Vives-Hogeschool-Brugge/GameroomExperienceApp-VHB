@@ -9,7 +9,7 @@ import RoomsComponent from '@/components/roomsComponent/RoomsComponent.vue'
 import ReservationsView from '@/views/reservationsView/ReservationsView.vue'
 import MyReservationView from '@/views/myReservationsView/MyReservationsView.vue'
 import AdminsView from '@/views/adminsView/AdminsView.vue'
-import HomeView from '@/views/homeView/Homeview.vue'
+import HomeView from '@/views/homeView/HomeView.vue'
 import PersonalPageView from '@/views/personalPageView/PersonalPageView.vue'
 import QRCodeReaderView from '@/views/qRCodeReaderView/QRCodeReaderView.vue'
 
