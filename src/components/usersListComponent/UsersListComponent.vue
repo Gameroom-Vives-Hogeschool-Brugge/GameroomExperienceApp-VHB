@@ -7,6 +7,7 @@
                 <v-list-item v-for="user in users" :key="user._id.toString()">
                     <v-list-item-title>{{ user.firstName }} {{ user.lastName }}</v-list-item-title>
                     <v-list-item-subtitle><strong>Id Nummer: </strong>{{ user.idNumber }}</v-list-item-subtitle>
+                    <v-list-item-subtitle><strong>Kaart Nummer: </strong>{{ user.cardNumber }}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Email: </strong>{{ user.email }}</v-list-item-subtitle>
                     <v-list-item-subtitle><strong>Type: </strong>{{ getTypeDescription(user.type) }}</v-list-item-subtitle>
                     <v-list-item-subtitle v-if="title != 'Proffen'"><strong>Opleiding: </strong>{{ getCourseDescription(user.course)}}</v-list-item-subtitle>
@@ -27,6 +28,7 @@
                         <v-text-field variant="outlined" v-model="firstName" label="Voornaam" type="input" color="black"></v-text-field>
                         <v-text-field variant="outlined" v-model="lastName" label="Achternaam" type="input"></v-text-field>
                         <v-text-field variant="outlined" v-model="idNumber" label="Id Nummer" type="input"></v-text-field>
+                        <v-text-field variant="outlined" v-model="cardNumber" label="Kaart Nummer" type="input"></v-text-field>
                         <v-text-field variant="outlined" v-model="email" label="Email" type="input"></v-text-field>
                         <v-select variant="outlined" v-model="type" :items="types" :item-title="(type) => type.type" :item-value="(type) => type._id" label="Type" required></v-select>
                         <v-select variant="outlined" v-model="course" :items="courses" :item-title="(course) => course.course" :item-value="(course) => course._id" label="Opleiding" required></v-select>
@@ -85,9 +87,11 @@ import type { ObjectId } from 'bson'
         data() {
             return {
                 editDialog: false,
+                userId: '' as unknown as ObjectId,
                 firstName: '' as string,
                 lastName: '' as string,
                 idNumber: '' as string,
+                cardNumber: '' as string,
                 email: '' as string,
                 type: '' as unknown as ObjectId,
                 course: '' as unknown as ObjectId,
@@ -107,10 +111,12 @@ import type { ObjectId } from 'bson'
                 return this.courses.find(course => course._id === courseId)?.course
             },
             editUser (user: FullUser) {
+                this.userId = user._id
                 this.firstName = user.firstName
                 this.lastName = user.lastName
                 this.idNumber = user.idNumber
                 this.email = user.email
+                this.cardNumber = user.cardNumber
                 this.type = user.type
                 this.course = user.course
                 this.role = user.role
@@ -121,9 +127,11 @@ import type { ObjectId } from 'bson'
             },
             saveUser () {
                 const editedUser = {
+                    _id: this.userId,
                     firstName: this.firstName,
                     lastName: this.lastName,
                     idNumber: this.idNumber,
+                    cardNumber: this.cardNumber,
                     email: this.email,
                     type: this.type,
                     course: this.course,

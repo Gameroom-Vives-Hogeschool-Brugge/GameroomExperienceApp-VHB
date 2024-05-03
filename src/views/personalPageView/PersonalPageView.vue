@@ -94,7 +94,7 @@
 import { useRouter } from 'vue-router'
 
 //components
-import NavBarComponent from '../navbarComponent/NavBarComponent.vue'
+import NavBarComponent from '@/components/navbarComponent/NavBarComponent.vue'
 
 //stores
 import { useActiveUserStore } from '@/stores/activeUserStore'
@@ -107,7 +107,7 @@ import ReservationsService from '@/services/reservationsService'
 import type { Reservation } from '@/models/Reservations'
 
 export default {
-  name: 'PersonalPageComponent',
+  name: 'PersonalPageView',
   components: {
     NavBarComponent,
   },

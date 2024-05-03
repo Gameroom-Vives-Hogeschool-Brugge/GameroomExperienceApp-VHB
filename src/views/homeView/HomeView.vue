@@ -42,7 +42,7 @@ import { useRouter } from 'vue-router';
 import { useActiveUserStore } from '@/stores/activeUserStore';
 
 export default {
-  name: 'HomeComponent',
+  name: 'HomeView',
   setup() {
     const dialog = ref(false);
     const extra = ref(false);

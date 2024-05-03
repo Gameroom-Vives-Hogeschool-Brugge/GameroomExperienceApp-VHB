@@ -52,7 +52,7 @@
         opnieuw te proberen.
       </v-card-text>
       <v-card-actions>
-        <v-btn id="close-btn" @click="navigateTo('HomeComponent')" color="btn secondary-color-btn"
+        <v-btn id="close-btn" @click="navigateTo('homeView')" color="btn secondary-color-btn"
           >Terug naar het beginscherm</v-btn
         >
       </v-card-actions>
@@ -128,7 +128,7 @@ export default {
       }
     },
     navigateTo (route: string) {
-        if (route == "HomeComponent") {
+        if (route == "homeView") {
             this.activeUserStore.resetActiveUser();
             this.activeUserStore.setTemporaryCardNumber("");
             this.activeUserStore.setActiveUserSelected(false);

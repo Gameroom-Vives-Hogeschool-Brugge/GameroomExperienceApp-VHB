@@ -22,7 +22,7 @@
 
     <div class="alerts">
       <!-- Alerts for the user creation -->
-    <v-alert
+      <v-alert
       v-if="unsuccesfulUserCreation"
       text="Gebruiker kon niet aangemaakt worden. Probeer opnieuw."
       title="Gebruiker niet aangemaakt"

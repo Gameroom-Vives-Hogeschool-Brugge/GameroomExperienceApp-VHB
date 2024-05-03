@@ -24,7 +24,7 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 import { useActiveUserStore } from '@/stores/activeUserStore'
 
 export default {
-    name: 'QRCodeReader',
+    name: 'QRCodeReaderView',
     components: {
         QrcodeStream
     },
@@ -54,7 +54,7 @@ export default {
             this.loading = false;
 
             if (response === 299) {
-                console.log("Student Kortrijk")
+                console.log("Student Brugge")
                 //naar registratiepagina
                 this.router.push("/Registration") 
             } else if (response === 298){

@@ -59,10 +59,10 @@ router.beforeEach((to) => {
 
   //if to admin page and not admin
   if (to.name === 'AdminsView' && !(activeUserStore.getActiveUserRole() === "Admin")) {
-    return { name: 'PersonalPageComponent' }
+    return { name: 'PersonalPageView' }
   }
 
-  if (to.name !== 'QrcodeReader' && to.name !== 'home' && to.name !== 'RegistrationComponent') {
+  if (to.name !== 'QRCodeReaderView' && to.name !== 'home' && to.name !== 'RegistrationComponent') {
     if (!activeUserStore.getActiveUserSelected()) {
       return { name: 'home' }
     }

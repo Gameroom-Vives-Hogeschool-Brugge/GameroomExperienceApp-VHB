@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
-import HomeComponent from './HomeComponent.vue';
-import QRCodeReader from '../qRCodeReader/QRCodeReader.vue'
+import homeView from './HomeView.vue';
+import QRCodeReaderView from '@/views/qRCodeReaderView/QRCodeReaderView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Define a simple set of routes for testing purposes
 const routes = [
-    { path: '/:pathMatch(.*)*', name: 'not-found', component: HomeComponent },
-    { path: '/', name: 'home', component: HomeComponent },
-    { path: '/QrcodeReader', name: 'QrcodeReader', component: QRCodeReader },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: homeView },
+    { path: '/', name: 'home', component: homeView },
+    { path: '/QrcodeReader', name: 'QRCodeReaderView', component: QRCodeReaderView },
   ];
 
 // Create the router instance for testing
@@ -17,15 +17,15 @@ const router = createRouter({
   routes,
 });
 
-describe('HomeComponent Navigation', () => {
+describe('homeView Navigation', () => {
 
     beforeEach(async () => {
         router.push('/'); // Reset the router to the initial route before each test
         await router.isReady(); // Wait for the router to be ready
     });
 
-    it('navigates to QrcodeReader when navigateToQrCodeReader is called', async () => {
-        const wrapper = mount(HomeComponent, {
+    it('navigates to QRCodeReaderView when navigateToQrCodeReader is called', async () => {
+        const wrapper = mount(homeView, {
         global: {
             plugins: [
                 router]
@@ -33,13 +33,13 @@ describe('HomeComponent Navigation', () => {
         });
         await wrapper.vm.navigateToQrCodeReader();
         await flushPromises(); // Wait for all pending promises to resolve
-        expect(router.currentRoute.value.name).toBe("QrcodeReader");
+        expect(router.currentRoute.value.name).toBe("QRCodeReaderView");
         
         wrapper.unmount();
     });
 
     it('toggles dialog state when dialog related button is clicked', async () => {
-        const wrapper = mount(HomeComponent, {
+        const wrapper = mount(homeView, {
         });
         await wrapper.find('#dialog-btn').trigger('click');
         expect(wrapper.vm.dialog).toBe(true);
@@ -49,7 +49,7 @@ describe('HomeComponent Navigation', () => {
 
 
     it('closes dialog when close button is clicked', async () => {
-        const wrapper = mount(HomeComponent, {
+        const wrapper = mount(homeView, {
         });
         
         await wrapper.find('#dialog-btn').trigger('click');
