@@ -62,7 +62,7 @@ git clone https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameroomExperience
 docker compose up -d --build
 ```
 
-## Containers
+# Containers
 
 ### App
 
