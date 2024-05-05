@@ -24,6 +24,7 @@
             label="Selecteer uw starttijd"
             :items="hourList"
             :rules="hourRules"
+            @update:modelValue="createdTimeSlot.duration = 1"
             required
           ></v-select>
           <v-select
@@ -100,8 +101,7 @@ export default {
       durationRules: [
         (v: any) => !!v || 'Duur is verplicht',
       ],
-        firstHour: 8,
-        lastHour: 17,
+        maxHoursAllowedPerPerson: 5
     }
   },
   methods: {
@@ -165,22 +165,32 @@ export default {
     },
     closeWindow() {
       this.$emit('closeWindow')
-    }
+    },
   },
   computed: {
     hourList(): string[] {
+      const earliestHour = this.roomsStore.getFirstReservableHour(this.createdTimeSlot.roomId)
+      const latestHour = this.roomsStore.getLastReservableHour(this.createdTimeSlot.roomId)
       let hourList = []
-      for (let i = this.firstHour; i < this.lastHour; i++) {
+      for (let i = earliestHour; i < latestHour; i++) {
         hourList.push(`${i}:00`)
       }
       return hourList
     },
     durationList(): number[] {
-        let durationList = []
-        for (let i = 1; i < 5; i++) {
-            durationList.push(i)
+      const latestHour = this.roomsStore.getLastReservableHour(this.createdTimeSlot.roomId)
+      const lastSlot = latestHour - 1; // Subtract 1 because the last slot ends one hour before lastHour
+      const selectedHourNumeric = parseInt(this.createdTimeSlot.reservationHour.split(':')[0]);
+      const maxDuration = lastSlot - selectedHourNumeric + 1; // Calculate the maximum duration available from the selected hour
+
+      let durationList = [];
+      for (let i = 1; i <= maxDuration; i++) {
+        if (i > this.maxHoursAllowedPerPerson) {
+          break;
         }
-        return durationList
+        durationList.push(i);
+      }
+      return durationList;
     },
     dateList(): string[] {
       let dateList = []
@@ -204,7 +214,7 @@ export default {
       }
 
       return dateList
-    },
+    }
   }
 }
 </script>

@@ -24,14 +24,14 @@
                       block
                       variant="tonal"
                       v-bind="props"
-                      v-if="checkReservationForThatTime(room, day, hour) === 0"
+                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 0"
                       color="error"
                       >Volzet</v-btn
                     >
                     <v-btn
                       block
                       variant="tonal"
-                      v-if="checkReservationForThatTime(room, day, hour) === 2"
+                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 2"
                       color="success"
                       v-bind="props"
                       >2 plaatsen vrij</v-btn
@@ -39,11 +39,18 @@
                     <v-btn
                       block
                       variant="tonal"
-                      v-if="checkReservationForThatTime(room, day, hour) === 1"
+                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 1"
                       color="warning"
                       v-bind="props"
                       >1 plaats vrij</v-btn
                     >
+                    <v-btn
+                      block
+                      variant="tonal"
+                      v-if="isUnvailable(day, hour)"
+                      disabled
+                      v-bind="props"
+                    >Unavailable</v-btn>
                   </template>
                   <v-list>
                     <v-list-item
@@ -117,13 +124,13 @@
                   variant="tonal"
                   color="error"
                   v-bind="props"
-                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 0"
+                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 0"
                   >Volzet</v-btn
                 >
                 <v-btn
                   block
                   variant="tonal"
-                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 2"
+                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 2"
                   color="success"
                   v-bind="props"
                   >2 plaatsen vrij</v-btn
@@ -131,10 +138,18 @@
                 <v-btn
                   block
                   variant="tonal"
-                  v-if="checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 1"
+                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 1"
                   color="warning"
                   v-bind="props"
                   >1 plaats vrij</v-btn
+                >
+                <v-btn
+                      block
+                      variant="tonal"
+                      v-if="isUnvailable(day, hour)"
+                      disabled
+                      v-bind="props"
+                >Unavailable</v-btn
                 >
               </template>
               <v-list>
@@ -328,6 +343,25 @@ export default {
 
       return reservationsLeft
     },
+    isUnvailable(date: Date, hour: string): boolean {
+      const currentDateTime = new Date();
+  
+      // Check if the given date is in the past
+      if (date < currentDateTime) {
+        return true;
+      }
+
+      // Check if the hour has already started for today
+      const difference = this.giveDifferenceBetweenBrusselsAndUTC();
+      const currentHour = parseInt(hour.split(':')[0]) + difference;
+      const currentUTC = currentDateTime.getUTCHours();
+
+      if (date.toDateString() === currentDateTime.toDateString() && currentHour < currentUTC) {
+        return true;
+    }
+
+      return false;
+    },
     dateToLocaleString(date: Date): string {
       const dateString = date.toLocaleDateString('nl-NL', {
         weekday: 'short',
@@ -469,18 +503,20 @@ export default {
     }
   },
   computed: {
+    //get the next 5 days that are not weekends
     dateList(): Date[] {
       let dateList = []
       let dayCounter = 0
 
       //get the next 5 days
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 5; i++) {
         let date = new Date()
         date.setDate(date.getDate() + dayCounter + i)
 
         //if it's a weekend, skip it
         if (date.getDay() === 0 || date.getDay() === 6) {
           ++dayCounter
+          i-- //compensate for the skipped day
           continue
         }
 

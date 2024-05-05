@@ -1,20 +1,50 @@
 <template>
-    <NavBarComponent />
-    <div class="mainContainer">
-        <div class="buttonContainer">
-            <v-btn id="routeToPersonalPage" class="btn tertiary-color-btn backButton" @click="navigateTo('PersonalPage')">Terug</v-btn>
-            <v-btn class="btn primary-color-btn" @click="navigateTo('Reservations')" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
-        </div>
-        <div class="headingContainer">
-            <h1>Mijn Reservaties</h1>
-        </div>
-        <div class="todayReservationsContainer">
-            <ReservationsListComponent @reservation-Deleted="reservationDeleted"  :reservations="reservationsToday" :rooms="rooms" title="Mijn Reservaties Vandaag" :loading="loading"/>
-        </div>
-        <div class="otherReservationsContainer">
-            <ReservationsListComponent @reservation-Deleted="reservationDeleted"  :reservations="reservationsOther" :rooms="rooms" title="Mijn Toekomstige Reservaties" :loading="loading"/>
-        </div>         
+  <NavBarComponent />
+  <div class="mainContainer">
+    <div class="buttonContainer">
+      <v-btn
+        id="routeToPersonalPage"
+        class="btn tertiary-color-btn backButton"
+        @click="navigateTo('PersonalPage')"
+        >Terug</v-btn
+      >
+      <v-btn class="btn primary-color-btn" @click="navigateTo('Reservations')" :disabled="loading"
+        >Maak Nieuwe Reservatie</v-btn
+      >
     </div>
+    <div class="headingContainer">
+      <h1>Mijn Reservaties</h1>
+    </div>
+    <div class="reservationsContainer todayReservationsContainer">
+        <ReservationsListComponent
+        @reservation-Deleted="reservationDeleted"
+        :reservations="reservationsToday"
+        :rooms="rooms"
+        title="Vandaag"
+        :loading="loading"
+        />
+        <!-- If no reservation, display this with a warning-->
+        <div v-if="reservationsToday.length == 0">
+            <v-alert class="tertiary-color-btn" outlined>
+                <p>Je hebt geen reservaties voor vandaag.</p>
+            </v-alert>
+        </div>
+    </div>
+    <div class="reservationsContainer otherReservationsContainer">
+      <ReservationsListComponent
+        @reservation-Deleted="reservationDeleted"
+        :reservations="reservationsOther"
+        :rooms="rooms"
+        title="Toekomstig"
+        :loading="loading"
+      />
+      <div v-if="reservationsOther.length == 0">
+            <v-alert class="tertiary-color-btn" outlined>
+                <p>Je hebt geen reservaties voor vandaag.</p>
+            </v-alert>
+        </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -31,51 +61,50 @@ import type { Reservation } from '@/models/Reservations'
 import type { Room } from '@/models/Rooms'
 
 //stores
-import { useActiveUserStore } from '@/stores/activeUserStore';
+import { useActiveUserStore } from '@/stores/activeUserStore'
 
 //other
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 export default {
-name: 'MyReservationsView',
-components: {
+  name: 'MyReservationsView',
+  components: {
     NavBarComponent,
     ReservationsListComponent
-},
-setup () {
-    const router = useRouter();
-    const reservationsService = new ReservationsService();
-    const roomsService = new RoomsService();
-    const activeUserStore = useActiveUserStore();
-    
+  },
+  setup() {
+    const router = useRouter()
+    const reservationsService = new ReservationsService()
+    const roomsService = new RoomsService()
+    const activeUserStore = useActiveUserStore()
+
     const navigateTo = (route: string) => {
-        if (route == "PersonalPage") {
-            router.push("/PersonalPage");
-        } else if (route == "Reservations") {
-            router.push("/Reservations");
-        }
-    };
-    return {
-        navigateTo,
-        reservationsService,
-        roomsService,
-        activeUserStore,
-        
-    };
-},
-data() {
-    return {
-        reservations: [] as Reservation[],
-        rooms: [] as Room[],
-        loading: true,
-        showLoadIcon: true
+      if (route == 'PersonalPage') {
+        router.push('/PersonalPage')
+      } else if (route == 'Reservations') {
+        router.push('/Reservations')
+      }
     }
-},
-async mounted() {
+    return {
+      navigateTo,
+      reservationsService,
+      roomsService,
+      activeUserStore
+    }
+  },
+  data() {
+    return {
+      reservations: [] as Reservation[],
+      rooms: [] as Room[],
+      loading: true,
+      showLoadIcon: true
+    }
+  },
+  async mounted() {
     // Fetch reservations
-    const activeUserId = this.activeUserStore.getActiveUser()._id;
+    const activeUserId = this.activeUserStore.getActiveUser()._id
     await this.reservationsService.getReservationsByUserId(activeUserId).then((response) => {
-        this.reservations = response as Reservation[]
+      this.reservations = response as Reservation[]
     })
 
     await this.roomsService.getAllRooms()
@@ -83,11 +112,10 @@ async mounted() {
     // Fetch rooms
     this.rooms = this.roomsService.getRooms() as Room[]
 
-    this.loading = false;
-    this.showLoadIcon = false;
-
-},
-computed: {
+    this.loading = false
+    this.showLoadIcon = false
+  },
+  computed: {
     reservationsToday(): Reservation[] {
       return this.reservations.filter((reservation: Reservation) => {
         return new Date(reservation.date).toDateString() == new Date().toDateString()
@@ -95,70 +123,74 @@ computed: {
     },
     reservationsOther(): Reservation[] {
       //return all reservations that are not today and sort them by date
-        return this.reservations.filter((reservation: Reservation) => {
-            return new Date(reservation.date).toDateString() != new Date().toDateString()
-        }).sort((a: Reservation, b: Reservation) => {
-            return new Date(a.date).getTime() - new Date(b.date).getTime()
+      return this.reservations
+        .filter((reservation: Reservation) => {
+          return new Date(reservation.date).toDateString() != new Date().toDateString()
         })
-    }  
-},
-methods: {
-    async reservationDeleted() : Promise<void> {
-        await this.reservationsService.getReservationsByUserId(this.activeUserStore.getActiveUser()._id).then((response) => {
-            this.reservations = response as Reservation[]
+        .sort((a: Reservation, b: Reservation) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime()
         })
     }
+  },
+  methods: {
+    async reservationDeleted(): Promise<void> {
+      await this.reservationsService
+        .getReservationsByUserId(this.activeUserStore.getActiveUser()._id)
+        .then((response) => {
+          this.reservations = response as Reservation[]
+        })
+    }
+  }
 }
-} 
-
 </script>
 
 <style scoped>
 navbarComponent {
-    height: 10vh;
+  height: 10vh;
 }
 
 .mainContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10vh !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10vh !important;
 }
 
 .buttonContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    height: 8vh;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 8vh;
+  width: 100%;
 }
 
 .headingContainer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height:8vh;
-        width: 100%;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8vh;
+  width: 100%;
+}
 
-.todayReservationsContainer {
+.reservationsContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 90%;
+    padding-top: 1vh;
+    padding-bottom: 5vh;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.todayReservationsContainer {
 }
 
 .otherReservationsContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 90%;
-    padding-top: 5vh;
-    padding-bottom: 5vh;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
 }
-
 </style>
