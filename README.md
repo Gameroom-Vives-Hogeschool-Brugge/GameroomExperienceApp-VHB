@@ -10,7 +10,7 @@ The Game Room Experience Reservation and Door Access application allows you to c
 
 ## Team
 
-[Olivier Van Ransbeeck]([Olivier Van Ransbeeck - Brussels Metropolitan Area | Professional Profile | LinkedIn](https://www.linkedin.com/in/oliviervanransbeeck/))
+[Olivier Van Ransbeeck](https://www.linkedin.com/in/oliviervanransbeeck/)
 
 ## Example video
 
@@ -56,13 +56,13 @@ git clone https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameroomExperience
 
 1. Copy the environment variables file (.env) to the main application folder.
 
-### Deploy all containers
+## Deploy all containers
 
 ```bash
-docker-compose up --build -d
+docker compose up -d --build
 ```
 
-## Containers
+# Containers
 
 ### App
 
