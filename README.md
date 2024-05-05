@@ -56,7 +56,7 @@ git clone https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameroomExperience
 
 1. Copy the environment variables file (.env) to the main application folder.
 
-### Deploy all containers
+## Deploy all containers
 
 ```bash
 docker compose up -d --build
