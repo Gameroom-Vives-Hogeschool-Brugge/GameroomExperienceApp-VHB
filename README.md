@@ -10,7 +10,7 @@ The Game Room Experience Reservation and Door Access application allows you to c
 
 ## Team
 
-[Olivier Van Ransbeeck]([Olivier Van Ransbeeck - Brussels Metropolitan Area | Professional Profile | LinkedIn](https://www.linkedin.com/in/oliviervanransbeeck/))
+[Olivier Van Ransbeeck](https://www.linkedin.com/in/oliviervanransbeeck/)
 
 ## Example video
 
