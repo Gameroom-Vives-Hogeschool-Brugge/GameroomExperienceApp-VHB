@@ -1,68 +1,103 @@
-# GameroomExperienceApp-VHB
+# Game Room Experience App Vives Hogeschool Brugge
 
-This template should help get you started developing with Vue 3 in Vite.
+[![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
+[![Made with TypeScript](https://img.shields.io/badge/TypeScript-4-blue?logo=typescript&logoColor=white)](https://typescriptlang.org "Go to TypeScript homepage")
+[![Made with Vue](https://img.shields.io/badge/Vue-3-blue?logo=vue.js&logoColor=white)](https://v3.vuejs.org "Go to Vue homepage")
 
-## Recommended IDE Setup
+Welcome, this application is the frontend of the Game Room Experience Reservation and Door Access application. This server should be therefore used in conjunction with the backend that can be found here -> [Backend](https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameRoomExperienceServer-VHB).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+The Game Room Experience Reservation and Door Access application allows you to create, update and control reservations for the Game Experience Room. Furthermore it is connected to a electrically controlled door which you can open if you have a valid reservation at that time.
 
-## Type Support for `.vue` Imports in TS
+## Team
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+[Olivier Van Ransbeeck]([Olivier Van Ransbeeck - Brussels Metropolitan Area | Professional Profile | LinkedIn](https://www.linkedin.com/in/oliviervanransbeeck/))
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+## Example video
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+## Features
 
-## Customize configuration
+- User Login control
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- User Registration control
 
-## Project Setup
+- Fetch Reservations
 
-```sh
-npm install
+- Create and Delete Reservations
+
+- Create, Update and Delete Users
+
+- Fetch Roles, Types, Courses and Rooms
+
+- Open the access door
+
+- Monitor the application via logfiles
+
+- Encrypt outgoing data, decrypt incoming data
+
+- Verify users via verification emails
+
+- Parses excel file with the registered students
+
+- Uses Cronjobs and Puppeteer for automatic email attachment fetching
+
+- Uses Cronjobs for automatic database cleaning
+
+- Stores and fetches data from a mongoDb database
+
+# Configuration and Installation
+
+## Cloning the repository
+
+```bash
+git clone https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameroomExperienceApp-VHB.git
 ```
 
-### Compile and Hot-Reload for Development
+## Configuration before deploying
 
-```sh
-npm run dev
+1. Copy the environment variables file (.env) to the main application folder.
+
+### Deploy all containers
+
+```bash
+docker-compose up --build -d
 ```
 
-### Type-Check, Compile and Minify for Production
+## Containers
 
-```sh
-npm run build
-```
+### App
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+The is a Vue.js application
 
-```sh
-npm run test:unit
-```
+### Nginx
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+This is an open-source webserving software.
 
-```sh
-npm run test:e2e:dev
-```
+## Important Maps
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+### Views
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
+These are big components which have their own route.
 
-```sh
-npm run build
-npm run test:e2e
-```
+### Components
 
-### Lint with [ESLint](https://eslint.org/)
+These are the smaller components which are being used by the Views.
 
-```sh
-npm run lint
-```
+### Models
+
+These are the typescript models the application uses.
+
+### Plugins
+
+The Vuetify Plugin in defined here
+
+### Router
+
+This folder holds the index file containing the routes.
+
+### Stores
+
+Here the Pinia stores are defined which are used in the application.
+
+### Services
+
+This contains the services which talk to the backend. They fetch and post information.
