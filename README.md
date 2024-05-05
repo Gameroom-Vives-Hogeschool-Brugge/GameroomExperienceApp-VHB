@@ -1,7 +1,7 @@
 # Game Room Experience App Vives Hogeschool Brugge
 
 [![Made with Docker](https://img.shields.io/badge/Made_with-Docker-blue?logo=docker&logoColor=white)](https://www.docker.com/ "Go to Docker homepage")
-[![Made with TypeScript](https://img.shields.io/badge/TypeScript-4-blue?logo=typescript&logoColor=white)](https://typescriptlang.org "Go to TypeScript homepage")
+[![Made with TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://typescriptlang.org "Go to TypeScript homepage")
 [![Made with Vue](https://img.shields.io/badge/Vue-3-blue?logo=vue.js&logoColor=white)](https://v3.vuejs.org "Go to Vue homepage")
 
 Welcome, this application is the frontend of the Game Room Experience Reservation and Door Access application. This server should be therefore used in conjunction with the backend that can be found here -> [Backend](https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameRoomExperienceServer-VHB).
