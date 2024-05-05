@@ -59,7 +59,7 @@ git clone https://github.com/Gameroom-Vives-Hogeschool-Brugge/GameroomExperience
 ### Deploy all containers
 
 ```bash
-docker-compose up --build -d
+docker compose up -d --build
 ```
 
 ## Containers
