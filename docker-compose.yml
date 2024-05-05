@@ -1,0 +1,20 @@
+services:
+  app:
+    container_name: GameRoomExperiencApp
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    
+  nginx:
+    image: nginx:alpine
+    container_name: GameRoomExperienceNginx
+    restart: always
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app

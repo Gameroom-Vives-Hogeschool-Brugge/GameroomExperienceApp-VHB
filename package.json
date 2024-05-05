@@ -15,7 +15,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "dockerbuild": "docker build -t gameroomexperienceapp-vhb .",
-    "dockerrun": "docker run -p 8080:80 gameroomexperienceapp-vhb"
+    "dockerrun": "docker run -p 8080:80 gameroomexperienceapp-vhb",
+    "dockercomposeup": "docker compose up -d",
+    "dockercomposestop": "docker compose stop",
+    "dockercomposebuildandup": "docker compose up -d --build"
   },
   "dependencies": {
     "@peculiar/webcrypto": "^1.4.5",
@@ -52,6 +55,7 @@
     "@vue/test-utils": "^2.4.4",
     "@vue/tsconfig": "^0.5.1",
     "cypress": "^13.6.3",
+    "esbuild": "^0.19.12",
     "eslint": "^8.49.0",
     "eslint-plugin-cypress": "^2.15.1",
     "eslint-plugin-vue": "^9.17.0",
