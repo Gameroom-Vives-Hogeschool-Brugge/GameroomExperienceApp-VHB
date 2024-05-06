@@ -8,13 +8,9 @@
         @click="navigateTo('PersonalPage')"
         >Terug</v-btn
       >
-      <v-btn class="btn primary-color-btn" @click=" displayUsers()"
-        >Toon Gebruikers</v-btn>
-      <v-btn class="btn primary-color-btn" @click="displayReservations()"
-        >Toon Reservaties</v-btn>
-      <v-btn class="btn primary-color-btn" @click="displayLogs()"
-        >Toon Logs</v-btn
-      >
+      <v-btn class="btn primary-color-btn" @click="displayUsers()">Toon Gebruikers</v-btn>
+      <v-btn class="btn primary-color-btn" @click="displayReservations()">Toon Reservaties</v-btn>
+      <v-btn class="btn primary-color-btn" @click="displayLogs()">Toon Logs</v-btn>
     </div>
     <div class="headerContainer">
       <h1>Admin Paneel | {{ shownContainer }}</h1>
@@ -23,26 +19,50 @@
     <div class="alerts">
       <!-- Alerts for the user creation -->
       <v-alert
-      v-if="unsuccesfulUserCreation"
-      text="Gebruiker kon niet aangemaakt worden. Probeer opnieuw."
-      title="Gebruiker niet aangemaakt"
-      type="error"
+        v-if="unsuccesfulUserCreation"
+        text="Gebruiker kon niet aangemaakt worden. Probeer opnieuw."
+        title="Gebruiker niet aangemaakt"
+        type="error"
       ></v-alert>
       <v-alert
-      v-if="succesfulUserCreation"
-      text="Gebruiker is succesvol aangemaakt."
-      title="Gebruiker aangemaakt"
-      type="success"
+        v-if="succesfulUserCreation"
+        text="Gebruiker is succesvol aangemaakt."
+        title="Gebruiker aangemaakt"
+        type="success"
       ></v-alert>
       <!-- Alerts for the user deletion -->
-
+      <v-alert
+        v-if="unsuccesfulUserDeletion"
+        text="Gebruiker kon niet verwijderd worden. Probeer opnieuw."
+        title="Gebruiker niet verwijderd"
+        type="error"
+      ></v-alert>
+      <v-alert
+        v-if="succesfulUserDeletion"
+        text="Gebruiker is succesvol verwijderd."
+        title="Gebruiker verwijderd"
+        type="success"
+      ></v-alert>
       <!-- Alerts for the user saving -->
+      <v-alert
+        v-if="unsuccesfulUserSaving"
+        text="Gebruiker kon niet opgeslagen worden. Probeer opnieuw."
+        title="Gebruiker niet opgeslagen"
+        type="error"
+      ></v-alert>
+      <v-alert
+        v-if="succesfulUserSaving"
+        text="Gebruiker is succesvol opgeslagen."
+        title="Gebruiker opgeslagen"
+        type="success"
+      ></v-alert>
     </div>
 
     <div class="container">
-      <div  v-if="showUsers" class="users">
+      <div v-if="showUsers" class="users">
         <v-btn class="btn create-color-btn" @click="createUserToggle = !createUserToggle"
-            >Maak Gebruiker</v-btn>
+          >Maak Gebruiker</v-btn
+        >
         <div class="container3">
           <!-- A list with all the students -->
           <UsersListComponent
@@ -77,14 +97,15 @@
         </div>
         <div v-if="createUserToggle" class="container4">
           <v-dialog v-model="createUserToggle">
-            <CreateUserComponent 
+            <CreateUserComponent
               @close-dialog="closeDialog"
               @create-user="createUser"
               :createUserToggle="createUserToggle"
-              :types="types" :roles="roles" 
+              :types="types"
+              :roles="roles"
               :courses="courses"
             />
-          </v-dialog>  
+          </v-dialog>
         </div>
       </div>
       <div v-if="showReservations" class="reservations">
@@ -93,10 +114,9 @@
             @reservation-Deleted="reservationDeleted"
             :reservations="filterReservationsOnRoomId(room._id as ObjectId)"
             :rooms="[room]"
-            :title="room.description "
+            :title="room.description"
             :loading="loading"
             :nameGiven="true"
-            
           />
         </div>
         <div class="container6">
@@ -108,18 +128,16 @@
         </div>
       </div>
       <div v-if="showLogs && !loading" class="logs">
-          <v-select
-              label="Select"
-              :items="logFiles"
-              :item-title="item => item.name"
-              :item-value="item => item"
-              v-model="selectedLogFile"
-          ></v-select>
+        <v-select
+          label="Select"
+          :items="logFiles"
+          :item-title="(item) => item.name"
+          :item-value="(item) => item"
+          v-model="selectedLogFile"
+        ></v-select>
         <div v-if="selectedLogFile" class="container7">
           <LogsListComponent :logFile="selectedLogFile" :loading="loading" />
         </div>
-        
-        <!-- A list with all the logs of that category -->
       </div>
     </div>
   </div>
@@ -139,7 +157,7 @@ import CreateUserComponent from '@/components/createUserComponent/CreateUserComp
 import ReservationsService from '@/services/reservationsService'
 import RoomsService from '@/services/roomsService'
 import AdminService from '@/services/adminService'
-import LoggerService from "@/services/loggerService"
+import LoggerService from '@/services/loggerService'
 
 //models
 import type { Reservation } from '@/models/Reservations'
@@ -200,7 +218,11 @@ export default {
       showLoadIcon: true,
       createUserToggle: false,
       succesfulUserCreation: false,
-      unsuccesfulUserCreation: false
+      unsuccesfulUserCreation: false,
+      succesfulUserDeletion: false,
+      unsuccesfulUserDeletion: false,
+      succesfulUserSaving: false,
+      unsuccesfulUserSaving: false
     }
   },
   async mounted() {
@@ -217,11 +239,11 @@ export default {
     this.courses = (await this.adminService.getAllCourses()) as UserCourse[]
 
     //get all logs
-    this.logFiles = await this.loggerService.getAllLogs() as LogFile[]
+    this.logFiles = (await this.loggerService.getAllLogs()) as LogFile[]
     this.selectedLogFile = this.logFiles[0] as LogFile
 
-    this.loading = false;
-    this.showLoadIcon = false;
+    this.loading = false
+    this.showLoadIcon = false
   },
   computed: {
     getStudents(): FullUser[] {
@@ -245,7 +267,7 @@ export default {
       //filter the users to only get the exceptions
       return this.users.filter((user) => user.type === typeId)
     },
-    shownContainer() : string {
+    shownContainer(): string {
       if (this.showUsers) {
         return 'Alle Gebruikers'
       } else if (this.showReservations) {
@@ -286,9 +308,11 @@ export default {
     filterReservationsOnRoomId(roomId: ObjectId): Reservation[] {
       return this.reservations.filter((reservation) => reservation.room._id === roomId)
     },
-    async reservationDeleted() : Promise<void> {
-        await this.reservationsService.getReservationsByUserId(this.activeUserStore.getActiveUser()._id).then((response) => {
-            this.reservations = response as Reservation[]
+    async reservationDeleted(): Promise<void> {
+      await this.reservationsService
+        .getReservationsByUserId(this.activeUserStore.getActiveUser()._id)
+        .then((response) => {
+          this.reservations = response as Reservation[]
         })
     },
     closeDialog() {
@@ -307,7 +331,6 @@ export default {
         await this.adminService.getAllUsers().then((response) => {
           this.users = response as FullUser[]
         })
-
       } else {
         //for 2 seconds show the unsuccesfulUserCreation alert
         this.unsuccesfulUserCreation = true
@@ -321,18 +344,18 @@ export default {
 
       if (response == 200) {
         //for 2 seconds show the succesfulUserCreation alert
-        this.succesfulUserCreation = true
+        this.succesfulUserDeletion = true
         await new Promise((resolve) => setTimeout(resolve, 2000))
-        this.succesfulUserCreation = false
+        this.succesfulUserDeletion = false
 
         await this.adminService.getAllUsers().then((response) => {
           this.users = response as FullUser[]
         })
       } else {
         //for 2 seconds show the unsuccesfulUserCreation alert
-        this.unsuccesfulUserCreation = true
+        this.unsuccesfulUserDeletion = true
         await new Promise((resolve) => setTimeout(resolve, 2000))
-        this.unsuccesfulUserCreation = false
+        this.unsuccesfulUserDeletion = false
       }
     },
     async updateEditedUser(editedUser: FullUser) {
@@ -340,18 +363,18 @@ export default {
 
       if (response == 200) {
         //for 2 seconds show the succesfulUserCreation alert
-        this.succesfulUserCreation = true
+        this.succesfulUserSaving = true
         await new Promise((resolve) => setTimeout(resolve, 2000))
-        this.succesfulUserCreation = false
+        this.succesfulUserSaving = false
 
         await this.adminService.getAllUsers().then((response) => {
           this.users = response as FullUser[]
         })
       } else {
         //for 2 seconds show the unsuccesfulUserCreation alert
-        this.unsuccesfulUserCreation = true
+        this.unsuccesfulUserSaving = true
         await new Promise((resolve) => setTimeout(resolve, 2000))
-        this.unsuccesfulUserCreation = false
+        this.unsuccesfulUserSaving = false
       }
     }
   }
@@ -364,36 +387,36 @@ navbarComponent {
 }
 
 .mainContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10vh !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10vh !important;
 }
 
 .buttonContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    height: 8vh;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 10vh;
+  width: 100%;
 }
 
 .buttonContainer > .btn {
-    margin: 0 5px;
+  margin: 3px 5px;
 }
 
-.headingContainer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height:8vh;
-        width: 100%;
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 8vh;
+  width: 100%;
 }
 
-.headingContainer > h1 {
-    text-align: center;
+.headerContainer > h1 {
+  text-align: center;
 }
 
 .container {
@@ -412,22 +435,35 @@ navbarComponent {
   align-items: center;
   justify-content: center;
   background-color: white;
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+
+.logs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.container7 {
+  width: 100%;
 }
 
 .alerts {
-    z-index: 2;
-    position: sticky;
-    display: flex;
-    top: 10vh;  
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-  }
+  z-index: 2;
+  position: sticky;
+  display: flex;
+  top: 10vh;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
-  .v-alert {
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 20px;
-  }
-
+.v-alert {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
 </style>

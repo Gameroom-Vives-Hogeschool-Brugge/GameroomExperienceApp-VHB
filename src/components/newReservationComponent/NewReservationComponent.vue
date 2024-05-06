@@ -17,6 +17,7 @@
             :items-title="(dateString: string) => dateStringtoLocaleDateString(dateString)"
             :itels-value="(dateString: string) => dateString"
             :rules="dateRules"
+            @update:modelValue="createdTimeSlot.reservationHour = hourList[0]"
             required
           ></v-select>
           <v-select
@@ -171,8 +172,16 @@ export default {
     hourList(): string[] {
       const earliestHour = this.roomsStore.getFirstReservableHour(this.createdTimeSlot.roomId)
       const latestHour = this.roomsStore.getLastReservableHour(this.createdTimeSlot.roomId)
+
       let hourList = []
       for (let i = earliestHour; i < latestHour; i++) {
+        // If the created day is today, only show the hours that are later than the current hour
+        if (this.createdTimeSlot.date === this.dateTodateString(new Date())) {
+          const currentHour = new Date().getHours()
+          if (i <= currentHour) {
+            continue
+          }
+        }
         hourList.push(`${i}:00`)
       }
       return hourList

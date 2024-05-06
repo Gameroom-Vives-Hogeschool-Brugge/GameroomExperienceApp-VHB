@@ -18,20 +18,33 @@
             <tr v-for="(hour, index) in hourList(room._id)" :key="hour">
               <th>{{ hour }} - {{ hoursPlusOneList(room._id)[index] }}</th>
               <td v-for="day in dateList" :key="dateToLocaleString(day)">
-                <v-menu location="bottom" id="tooltip" :open-delay="200" :open-on-hover="true" :open-on-click="true" :close-delay="200">
+                <v-menu
+                  location="bottom"
+                  id="tooltip"
+                  :open-delay="200"
+                  :open-on-hover="true"
+                  :open-on-click="true"
+                  :close-delay="200"
+                >
                   <template v-slot:activator="{ props }">
                     <v-btn
                       block
                       variant="tonal"
                       v-bind="props"
-                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 0"
+                      v-if="
+                        !isInThePast(day, hour) &&
+                        checkReservationForThatTime(room, day, hour) === 0
+                      "
                       color="error"
                       >Volzet</v-btn
                     >
                     <v-btn
                       block
                       variant="tonal"
-                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 2"
+                      v-if="
+                        !isInThePast(day, hour) &&
+                        checkReservationForThatTime(room, day, hour) === 2
+                      "
                       color="success"
                       v-bind="props"
                       >2 plaatsen vrij</v-btn
@@ -39,7 +52,10 @@
                     <v-btn
                       block
                       variant="tonal"
-                      v-if="!isUnvailable(day, hour) && checkReservationForThatTime(room, day, hour) === 1"
+                      v-if="
+                        !isInThePast(day, hour) &&
+                        checkReservationForThatTime(room, day, hour) === 1
+                      "
                       color="warning"
                       v-bind="props"
                       >1 plaats vrij</v-btn
@@ -47,10 +63,11 @@
                     <v-btn
                       block
                       variant="tonal"
-                      v-if="isUnvailable(day, hour)"
+                      v-if="isInThePast(day, hour)"
                       disabled
                       v-bind="props"
-                    >Unavailable</v-btn>
+                      >Unavailable</v-btn
+                    >
                   </template>
                   <v-list>
                     <v-list-item
@@ -124,13 +141,19 @@
                   variant="tonal"
                   color="error"
                   v-bind="props"
-                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 0"
+                  v-if="
+                    !isInThePast(day, hour) &&
+                    checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 0
+                  "
                   >Volzet</v-btn
                 >
                 <v-btn
                   block
                   variant="tonal"
-                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 2"
+                  v-if="
+                    !isInThePast(day, hour) &&
+                    checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 2
+                  "
                   color="success"
                   v-bind="props"
                   >2 plaatsen vrij</v-btn
@@ -138,18 +161,16 @@
                 <v-btn
                   block
                   variant="tonal"
-                  v-if="!isUnvailable(day, hour) && checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 1"
+                  v-if="
+                    !isInThePast(day, hour) &&
+                    checkReservationForThatTime(getRoombyId(selectedRoomId), day, hour) === 1
+                  "
                   color="warning"
                   v-bind="props"
                   >1 plaats vrij</v-btn
                 >
-                <v-btn
-                      block
-                      variant="tonal"
-                      v-if="isUnvailable(day, hour)"
-                      disabled
-                      v-bind="props"
-                >Unavailable</v-btn
+                <v-btn block variant="tonal" v-if="isInThePast(day, hour)" v-bind="props"
+                  >Unavailable</v-btn
                 >
               </template>
               <v-list>
@@ -182,7 +203,8 @@
                 </v-list-item>
                 <v-list-item
                   v-if="
-                    giveReservationsForThatTime(getRoombyId(selectedRoomId), day, hour).length < 2
+                    giveReservationsForThatTime(getRoombyId(selectedRoomId), day, hour).length <
+                      2 && !isInThePast(day, hour)
                   "
                 >
                   <v-list-item-title>Maak een reservatie</v-list-item-title>
@@ -193,6 +215,14 @@
                     @click="createReservation(selectedRoomId, day, hour)"
                     >Reserveer</v-btn
                   >
+                </v-list-item>
+                <v-list-item
+                  v-if="
+                    giveReservationsForThatTime(getRoombyId(selectedRoomId), day, hour).length != 2
+                      && isInThePast(day, hour)
+                  "
+                >
+                  <v-list-item-title>Dit tijdslot in nu onbeschikbaar</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -291,7 +321,7 @@ export default {
       reservationToDelete: null as unknown as ObjectId
     }
   },
-  created () {
+  created() {
     //if window is resized, update the screenwidth
     window.addEventListener('resize', () => {
       this.screenwidth = window.innerWidth
@@ -308,7 +338,7 @@ export default {
     }
 
     this.selectedRoomId = this.rooms[0]._id as ObjectId
-    
+
     this.showLoadIcon = false
 
     this.$emit('loadingCompleted')
@@ -343,24 +373,13 @@ export default {
 
       return reservationsLeft
     },
-    isUnvailable(date: Date, hour: string): boolean {
-      const currentDateTime = new Date();
-  
-      // Check if the given date is in the past
-      if (date < currentDateTime) {
-        return true;
-      }
+    isInThePast(date: Date, hour: string): boolean {
+      const currentDate = new Date()
+      const selectedDate = new Date(date.getTime())
+      selectedDate.setHours(parseInt(hour.split(':')[0]), 0, 0, 0)
 
-      // Check if the hour has already started for today
-      const difference = this.giveDifferenceBetweenBrusselsAndUTC();
-      const currentHour = parseInt(hour.split(':')[0]) + difference;
-      const currentUTC = currentDateTime.getUTCHours();
-
-      if (date.toDateString() === currentDateTime.toDateString() && currentHour < currentUTC) {
-        return true;
-    }
-
-      return false;
+      // Check if the selected date and time is in the past
+      return selectedDate <= currentDate
     },
     dateToLocaleString(date: Date): string {
       const dateString = date.toLocaleDateString('nl-NL', {
@@ -477,7 +496,9 @@ export default {
       this.reservationToDelete = reservationId
     },
     async deleteReservation(): Promise<void> {
-      const responseStatus = await this.reservationsService.deleteReservation(this.reservationToDelete);
+      const responseStatus = await this.reservationsService.deleteReservation(
+        this.reservationToDelete
+      )
 
       if (responseStatus === 200) {
         this.deleteDialog = false
@@ -491,7 +512,6 @@ export default {
       } else {
         console.log('Error deleting reservation')
       }
-
     },
     //check if reservationId == activeUserStore.activeUser._id or if the user is an admin or if the user is a prof
     checkIfAnnulable(reservation: Reservation): boolean {
@@ -532,13 +552,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 table {
   margin-bottom: 20px;
   display: block;
 }
 
-.v-window__container{
+.v-window__container {
   width: 1250px;
 }
 
@@ -609,14 +629,13 @@ table {
 }
 
 @media screen and (min-width: 1250px) {
-  
 }
 
 @media screen and (max-width: 1250px) {
   .roomDiv {
-    background-color: #f5f5f5!important;
+    background-color: #f5f5f5 !important;
   }
-  
+
   .v-list {
     background-color: #f5f5f5 !important;
     padding: 0px !important;
@@ -629,11 +648,8 @@ table {
   }
 
   .v-input {
-    margin: 10px 0px 0px 0px!important;
+    margin: 10px 0px 0px 0px !important;
     max-width: 400px !important;
   }
 }
-
-
-
 </style>

@@ -20,7 +20,7 @@
         <v-divider class="mt-2"></v-divider> </template
     ></v-select>
     <div v-if="lengthOfLogs != 0">
-      <v-container v-for="(log, index) of filterLogsOnSelectedLevels.logs" :key="index">
+      <div v-for="(log, index) of filterLogsOnSelectedLevels.logs" :key="index" class="listContainer">
         <v-card>
           <v-card-title
             :style="[
@@ -39,14 +39,12 @@
             <p><strong>Tijdstip:</strong> {{ log.timestamp }}</p>
           </v-card-text>
         </v-card>
-      </v-container>
+      </div>
     </div>
-    <div v-else>
-      <v-container>
-        <v-card>
-          <v-card-title>Geen berichten</v-card-title>
-        </v-card>
-      </v-container>
+    <div v-else class="noMessagesDiv">
+      <v-card class="noMessagesCard">
+        <v-card-title>Geen berichten</v-card-title>
+      </v-card>
     </div>
   </div>
 </template>
@@ -147,11 +145,44 @@ export default defineComponent({
   margin-top: 20px;
 }
 
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.noMessagesDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+}
+
+.v-card {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  width: 80%;
+}
+
+.noMessagesCard > .v-card-title {
+  text-align: center;
+}
+
+.v-card-text {
+  word-break: break-all;
+}
+
 .v-input {
     height: 100px !important;
 }
 
 .v-select {
   height: 100px !important;
+  max-width: 500px;
 }
 </style>

@@ -1,46 +1,80 @@
 <template>
   <div class="createUserContainer">
-    <v-sheet>
-      <v-form @submit.prevent="createUser" v-model="isFormValid">
-        <v-text-field v-model="user.idNumber" :rules="rules" label="Id Nummer" required></v-text-field>
-        <v-text-field v-model="user.firstName" :rules="rules" label="Voornaam" required></v-text-field>
-        <v-text-field v-model="user.lastName" :rules="rules" label="Achternaam" required></v-text-field>
-        <v-text-field v-model="user.email" :rules="isEmailAdress" label="Email" required></v-text-field>
-        <v-text-field v-model="user.cardNumber" :rules="rules" label="Kaartnummer" required></v-text-field>
-
-        <v-select
-          v-model="user.type"
-          :items="types"
-          :item-title="(userType: UserType) => userType.type"
-          :item-value="(userType: UserType) => userType._id"
-          :rules="rules"
-          label="Type"
-          required
-        ></v-select>
-        <v-select
-          v-model="user.role"
-          :items="shownRoles()"
-          :item-title="(userRole: UserRole) => userRole.role"
-          :item-value="(userRole: UserRole) => userRole._id"
-          :rules="rules"
-          label="Role"
-          required
-        ></v-select>
-        <v-select
-          v-model="user.course"
-          :items="shownCourses()"
-          :item-title="(userCourse: UserCourse) => userCourse.course"
-          :item-value="(userCourse: UserCourse) => userCourse._id"
-          :rules="rules"
-          label="Course"
-          required
-        ></v-select>
-        <v-btn id="close-btn" @click="closeDialog()" color="btn secondary-color-btn"
-          >Annuleren</v-btn
-        >
-        <v-btn id="save-btn" @click="createUser()" :disabled="!isFormValid" color="btn primary-color-btn">Opslaan</v-btn>
-      </v-form>
-    </v-sheet>
+    <v-card>
+        <v-card-title class="dialogTitle">Maak Gebruiker Aan</v-card-title>
+        <v-container>
+          <v-text-field
+            variant="outlined"
+            v-model="user.firstName"
+            label="Voornaam"
+            type="input"
+            :rules="rules"
+            color="black"
+          ></v-text-field>
+          <v-text-field
+            variant="outlined"
+            v-model="user.lastName"
+            label="Achternaam"
+            type="input"
+            :rules="rules"
+          ></v-text-field>
+          <v-text-field
+            variant="outlined"
+            v-model="user.idNumber"
+            label="Id Nummer"
+            type="input"
+            :rules="rules"
+          ></v-text-field>
+          <v-text-field
+            variant="outlined"
+            v-model="user.cardNumber"
+            label="Kaart Nummer"
+            type="input"
+            :rules="rules"
+          ></v-text-field>
+          <v-text-field
+            variant="outlined"
+            v-model="user.email"
+            label="Email"
+            type="input"
+            :rules="isEmailAdress"
+          ></v-text-field>
+          <v-select
+            variant="outlined"
+            v-model="user.type"
+            :items="types"
+            :item-title="(type) => type.type"
+            :item-value="(type) => type._id"
+            @update:modelValue="user.role = shownRoles[0]._id; user.course = shownCourses[0]._id"
+            label="Type"
+            required
+          ></v-select>
+          <v-select
+            variant="outlined"
+            v-model="user.role"
+            :items="shownRoles"
+            :item-title="(role) => role.role"
+            :item-value="(role) => role._id"
+            @update:modelValue="user.course = shownCourses[0]._id; user.type = types[0]._id"
+            label="Rol"
+            required
+          ></v-select>
+          <v-select
+            variant="outlined"
+            v-model="user.course"
+            :items="shownCourses"
+            :item-title="(course) => course.course"
+            :item-value="(course) => course._id"
+            @update:modelValue="user.role = shownRoles[0]._id; user.type = types[0]._id"
+            label="Opleiding"
+            required
+          ></v-select>
+        </v-container>
+        <v-card-actions class="dialogButtons">
+          <v-btn variant="outlined" @click="closeDialog()">Cancel</v-btn>
+          <v-btn variant="outlined" @click="createUser()" :disabled="!formisValid" color="success">Save</v-btn>
+        </v-card-actions>
+      </v-card>
   </div>
 </template>
 
@@ -84,14 +118,11 @@ export default {
         role: this.roles[0]._id,
         course: this.courses[0]._id
       } as unknown as CreateUser,
-      rules: [
-        (v: string) => !!v || 'Verplicht veld',
-      ],
-      isEmailAdress : [
+      rules: [(v: string) => !!v || 'Verplicht veld'],
+      isEmailAdress: [
         //must be a valid email address
         (v: string) => /.+@.+\..+/.test(v) || 'Email moet een geldig email adres zijn'
       ],
-        isFormValid: false
     }
   },
   methods: {
@@ -100,81 +131,117 @@ export default {
       this.$emit('closeDialog')
     },
     createUser() {
-      this.$emit("createUser", this.user)
+      this.$emit('createUser', this.user)
     },
-    //depending on the type of user, show the correct courses
-    shownCourses() {
-      //if the user.type is prof, autoselect the NotApplicable course
-      if (this.isProf) {
-        //set the course to Not Applicable
-        this.user.course = this.courses.find((course) => course.course === 'Not Applicable')!._id
-
-        //return only the Not Applicable course
-        return this.courses.filter((course) => course.course === 'Not Applicable')
-      } else if (this.isStudent) {
-        //set the course to PBA Electronica-ICT (Kortrijk) (AO)
-        this.user.course = this.courses.find(
-          (course) => course.course === 'PBA Electronica-ICT (Kortrijk) (AO)'
-        )!._id
-
-        //return all courses except the Not Applicable course
-        return this.courses.filter((course) => course.course !== 'Not Applicable')
-      } else {
-        return this.courses
-      }
-    },
-    //depending on the type of user, show the correct roles
-    shownRoles() {
-      if (this.isProf) {
-        //set the role to Prof
-        this.user.role = this.roles.find((role) => role.role === 'Prof')!._id
-
-        //return all roles except the Student role
-        return this.roles.filter((role) => role.role !== 'Student')
-      } else if (this.isStudent) {
-        //set the role to Student
-        this.user.role = this.roles.find((role) => role.role === 'Student')!._id
-
-        //return all roles except the Prof role
-        return this.roles.filter((role) => role.role !== 'Prof')
-      } else {
-        return this.roles
-      }
-    }
   },
   computed: {
     isProf() {
-        //get the _id of type prof
-        let profType = this.types.find((type) => type.type === 'Prof')
+      //get the _id of type prof
+      let profType = this.types.find((type) => type.type === 'Prof')
 
-        //if the user.type is prof, return true
-        if (profType && this.user.type === profType._id) {
-            return true
-        } else {
-            return false
+      //if the user.type is prof, return true
+      if (profType && this.user.type === profType._id) {
+        return true
+      } else {
+        return false
       }
     },
     isStudent() {
-        //get the _id of type student
-        let studentType = this.types.find((type) => type.type === 'Student')
+      //get the _id of type student
+      let studentType = this.types.find((type) => type.type === 'Student')
 
-        //if the user.type is student, return true
-        if (studentType && this.user.type === studentType._id) {
-            return true
-        } else {
-            return false
+      //if the user.type is student, return true
+      if (studentType && this.user.type === studentType._id) {
+        return true
+      } else {
+        return false
+      }
+    },
+    shownRoles() {
+        const roles = this.roles
+
+        //check if this.type.type is "Student" and if so, filter out the role that is called "Prof"
+        if (this.types.find((type) => type._id === this.user.type)?.type === 'Student'){
+          return roles.filter((role) => role.role !== 'Prof')
         }
+
+        //check if this.type.type is "Prof" and if so, filter out the role that is called "Student"
+        if (this.types.find((type) => type._id === this.user.type)?.type === 'Prof'){
+          return roles.filter((role) => role.role !== 'Student')
+        }
+
+      return this.roles
+    },
+    shownTypes() {
+        const types = this.types
+
+        //check if this.role.role is "Prof" and if so, filter out the type that is called "Student"
+        if (this.roles.find((role) => role._id === this.user.role)?.role === 'Prof'){
+          return types.filter((type) => type.type !== 'Student')
+        }
+
+        //check if this.role.role is "Student" and if so, filter out the type that is called "Prof"
+        if (this.roles.find((role) => role._id === this.user.role)?.role === 'Student'){
+          return types.filter((type) => type.type !== 'Prof')
+        }
+
+      return types
+    },
+    shownCourses() {
+        const courses = this.courses
+
+        //check if this.role.role is "Prof" and if so, only display the course that is called "N/A"
+        if (this.roles.find((role) => role._id === this.user.role)?.role === 'Prof'){
+          return courses.filter((course) => course.course === 'Not Applicable')
+        }
+
+      return courses
+    },
+    formisValid() {
+      //check if all fields are filled in and all the rules are met
+      return this.user.firstName && this.user.lastName && this.user.idNumber && this.user.cardNumber && this.user.email && this.user.type && this.user.role && this.user.course
+
     }
   }
 }
 </script>
 
-
 <style scoped>
 
-.createUserContainer {
-  max-width: 50vw !important;
-  min-width: 400px;
+.createUserContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
+.v-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  max-width: 500px;
+}
+
+.v-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.v-input {
+  width: 90% !important;
+}
+
+.dialogTitle {
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.dialogButtons {
+    margin-bottom: 10px;
+}
 </style>
