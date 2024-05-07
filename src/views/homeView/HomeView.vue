@@ -5,8 +5,8 @@
 
   <div class="container">
     <div class="container1">
-      <h1>Welkom op {{ title }}</h1>
-      <h2>Gelieve de QR Code op uw studentenkaart te scannen.</h2>
+      <h1>{{ title }}</h1>
+      <h2>Gelieve de QR Code op uw VIVES kaart te scannen.</h2>
     </div>
     <div class="container2">
       <v-btn @click="navigateToQrCodeReader()" class="btn primary-color-btn mainButton"
@@ -49,7 +49,7 @@
           </div>
           <v-card-actions class="container6">
             <v-btn id="close-btn" @click="dialog = false" color="btn secondary-color-btn"
-              >Close Dialog</v-btn
+              >Sluiten</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -93,7 +93,7 @@ export default {
   },
   data() {
     return {
-      title: 'het Gameroom Experience Reservatie Systeem',
+      title: 'RESERVATIE SYSTEEM - GAME EXPERIENCE ROOM',
       bruggeError: false
     }
   }
@@ -171,6 +171,13 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.v-dialog > .v-overlay__content {
+  display: flex  !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 800px!important;
 }
 
 .infoBtn {

@@ -2,7 +2,7 @@
   <NavbarComponent />
   <div class="container">
     <div class="container1">
-      <h1>Kies uw naam uit de lijst</h1>
+      <h1>KIES UW NAAM UIT DE LIJST</h1>
       <h2>Uw kaartnummer wordt aan deze naam gekoppeld en een verificatie email wordt verstuurd.</h2>
     </div>
     <div class="container2">
@@ -15,7 +15,9 @@
             :item-props="registeredPersonsProps"
             :rules="rules"
           ></v-select>
-          <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Verstuur email</v-btn>
+          <v-card-actions class="submitButton">
+            <v-btn id="submit-btn" type="submit" color="btn primary-color-btn">Verstuur email</v-btn>
+          </v-card-actions>
         </v-form>
       </v-sheet>
     </div>
@@ -158,7 +160,6 @@ v-card {
 }
 
 .container1 {
-  width: 80%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -171,21 +172,47 @@ v-card {
 }
 
 .container2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 80%;
-  min-width: 300px;
+  max-width: 400px;
+}
+
+.v-sheet {
+  width: 100%;
+}
+
+.v-form {
+  border: 1px solid grey;
+  border-radius: 10px;
+}
+
+.v-select {
+  widows: 80% !important;
+  width: 100%;
+  padding: 10px;
+}
+
+.submitButton {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.v-sheet {
-  min-width: 300px;
-  max-width: 80%;
+.submitButton > .v-btn {
+  width: 10px!important;
 }
 
-.v-form {
-  width: 80%;
-  min-width: 300px;
+.v-dialog > .v-overlay__content {
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100%!important;
+}
+
+.v-card {
+  max-width: 800px;
 }
 
 .v-card-title,
@@ -210,7 +237,8 @@ v-card {
 }
 
 #submit-btn {
-  width: 100% !important;
+  width: 80%!important;
   height: 40px !important;
+  margin-bottom: 10px;
 }
 </style>

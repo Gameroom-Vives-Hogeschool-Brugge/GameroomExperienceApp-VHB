@@ -34,12 +34,12 @@
       </v-overlay>
     </div>
 
-    <v-dialog v-model="deleteDialog" max-width="500">
-      <v-card>
-        <v-card-title>Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
+    <v-dialog v-model="deleteDialog">
+      <v-card class="deleteCard">
+        <v-card-title  class="deleteTitle">Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
         <v-card-actions>
-          <v-btn color="error" @click="deleteDialog = false">Nee</v-btn>
-          <v-btn color="error" @click="deleteReservation()">Ja</v-btn>
+          <v-btn variant="outlined" @click="deleteDialog = false">Nee</v-btn>
+          <v-btn variant="outlined" color="error" @click="deleteReservation()">Ja</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -171,11 +171,33 @@ export default {
   justify-content: center;
 }
 
+.v-dialog > .v-overlay__content{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  width: 80%;
+}
+
+.deleteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  max-width: 900px;
+  padding: 5px;
+}
+
 .v-card {
   max-height: 200px !important;
 }
 
 .v-card-actions {
-  padding: 0 !important;
+  padding-bottom: 5px!important;
+}
+
+.deleteTitle {
+  text-align: center;
+  word-break: break-word;
 }
 </style>

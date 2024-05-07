@@ -1,7 +1,7 @@
 <template>
   <div class="createUserContainer">
     <v-card>
-        <v-card-title class="dialogTitle">Maak Gebruiker Aan</v-card-title>
+        <v-card-title class="dialogTitle">Nieuwe Gebruiker</v-card-title>
         <v-container>
           <v-text-field
             variant="outlined"
@@ -71,8 +71,8 @@
           ></v-select>
         </v-container>
         <v-card-actions class="dialogButtons">
-          <v-btn variant="outlined" @click="closeDialog()">Cancel</v-btn>
-          <v-btn variant="outlined" @click="createUser()" :disabled="!formisValid" color="success">Save</v-btn>
+          <v-btn variant="outlined" @click="closeDialog()">Sluiten</v-btn>
+          <v-btn variant="outlined" @click="createUser()" :disabled="!formisValid" color="success">Opslaan</v-btn>
         </v-card-actions>
       </v-card>
   </div>

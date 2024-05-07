@@ -13,7 +13,7 @@
       >
     </div>
     <div class="headingContainer">
-      <h1>Mijn Reservaties</h1>
+      <h1>MIJN RESERVATIES</h1>
     </div>
     <div class="reservationsContainer todayReservationsContainer">
         <ReservationsListComponent
@@ -42,7 +42,7 @@
             <v-alert class="tertiary-color-btn" outlined>
                 <p>Je hebt geen reservaties voor vandaag.</p>
             </v-alert>
-        </div>
+      </div>
     </div>
   </div>
 </template>

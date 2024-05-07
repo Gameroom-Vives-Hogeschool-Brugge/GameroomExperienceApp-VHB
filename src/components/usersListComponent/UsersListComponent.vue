@@ -22,10 +22,10 @@
         >
         <div class="buttons">
           <!-- ability to change the information of a user-->
-          <v-btn color="warning" variant="outlined" @click="editUser(user)">Edit</v-btn>
+          <v-btn color="warning" variant="outlined" @click="editUser(user)">Aanpassen</v-btn>
           <!-- ability to delete a user-->
-          <v-btn color="error" variant="outlined" @click="deleteUser(user._id)" id="deletebutton"
-            >Delete</v-btn
+          <v-btn color="error" variant="outlined" @click="openDeleteDialog(user._id)" id="deletebutton"
+            >Verwijderen</v-btn
           >
         </div>
       </v-list-item>
@@ -98,8 +98,18 @@
           ></v-select>
         </v-container>
         <v-card-actions class="dialogButtons">
-          <v-btn variant="outlined" @click="editDialog = false">Cancel</v-btn>
-          <v-btn variant="outlined" @click="saveUser()" color="success">Save</v-btn>
+          <v-btn variant="outlined" @click="editDialog = false">Sluiten</v-btn>
+          <v-btn variant="outlined" @click="saveUser()" color="success">Opslaan</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="deleteDialog">
+      <v-card class="deleteCard">
+        <v-card-title  class="deleteTitle">Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
+        <v-card-actions>
+          <v-btn variant="outlined" @click="deleteDialog = false">Nee</v-btn>
+          <v-btn variant="outlined" color="error" @click="deleteUser()">Ja</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -155,7 +165,9 @@ export default {
       email: '' as string,
       type: '' as unknown as ObjectId,
       course: '' as unknown as ObjectId,
-      role: '' as unknown as ObjectId
+      role: '' as unknown as ObjectId,
+      deleteDialog: false,
+      userToDelete: null as unknown as ObjectId
     }
   },
   async mounted() {},
@@ -223,8 +235,8 @@ export default {
       this.role = user.role
       this.editDialog = true
     },
-    deleteUser(userId: ObjectId) {
-      this.$emit('delete-user', userId)
+    deleteUser() {
+      this.$emit('delete-user', this.userToDelete)
     },
     saveUser() {
       const editedUser = {
@@ -242,7 +254,11 @@ export default {
       this.$emit('update-editedUser', editedUser)
 
       this.editDialog = false
-    }
+    },
+    openDeleteDialog(userId: ObjectId) {
+      this.deleteDialog = true
+      this.userToDelete = userId
+    },
   }
 }
 </script>
@@ -255,6 +271,9 @@ export default {
   display: flex;
   flex-direction: column;
   margin-top: 2vh;
+  padding-top: 5px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
 }
 
 .usersContainer {
@@ -271,10 +290,16 @@ export default {
 
 .buttons {
   margin-top: 10px;
+  padding-bottom: 5px;
 }
 
 .v-dialog {
   max-width: 500px;
+}
+
+.v-input {
+  width: 80% !important;
+
 }
 
 .dialogTitle {
@@ -317,5 +342,18 @@ export default {
 
 .v-list-item-subtitle {
   margin-top: 3px;
+}
+
+.deleteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  max-width: 900px;
+  padding: 5px;
+}
+
+.deleteTitle {
+  text-align: center;
+  word-break: break-word;
 }
 </style>

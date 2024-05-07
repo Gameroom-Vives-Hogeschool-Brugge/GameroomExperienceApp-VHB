@@ -562,6 +562,11 @@ table {
   width: 1250px;
 }
 
+.v-select {
+  width: 80% !important;
+  max-width: 400px !important;
+}
+
 .v-tooltip__content {
   background-color: white !important;
   color: white !important;

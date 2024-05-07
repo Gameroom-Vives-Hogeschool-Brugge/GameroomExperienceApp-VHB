@@ -3,6 +3,7 @@
     <h2>{{ logFile.name }}</h2>
     <v-select
       v-model="selectedLevels"
+      class="selectedLevels"
       :items="levels"
       label="Selecteer één of meerdere log levels"
       multiple
@@ -90,7 +91,7 @@ export default defineComponent({
         color: 'black'
       },
       levels: ['ERROR', 'WARN', 'INFO', 'DEBUG', 'SILLY', 'VERBOSE'],
-      selectedLevels: [''] as string[]
+      selectedLevels: ['INFO'] as string[]
     }
   },
   methods: {
@@ -145,12 +146,15 @@ export default defineComponent({
   margin-top: 20px;
 }
 
+.selectedLevels{
+  padding: 0px;
+}
+
 .listContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 10px;
 }
 
 .noMessagesDiv {
@@ -183,6 +187,7 @@ export default defineComponent({
 
 .v-select {
   height: 100px !important;
+  width: 80%;
   max-width: 500px;
 }
 </style>

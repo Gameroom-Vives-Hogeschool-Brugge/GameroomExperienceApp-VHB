@@ -13,7 +13,7 @@
       <v-btn class="btn primary-color-btn" @click="displayLogs()">Toon Logs</v-btn>
     </div>
     <div class="headerContainer">
-      <h1>Admin Paneel | {{ shownContainer }}</h1>
+      <h1>ADMIN PANEEL | {{ shownContainer }}</h1>
     </div>
 
     <div class="alerts">
@@ -58,12 +58,12 @@
       ></v-alert>
     </div>
 
-    <div class="container">
+    <div class="listsContainer">
       <div v-if="showUsers" class="users">
         <v-btn class="btn create-color-btn" @click="createUserToggle = !createUserToggle"
           >Maak Gebruiker</v-btn
         >
-        <div class="container3">
+        <div class="usersContainer">
           <!-- A list with all the students -->
           <UsersListComponent
             @delete-user="deleteUser"
@@ -109,7 +109,7 @@
         </div>
       </div>
       <div v-if="showReservations" class="reservations">
-        <div v-for="room of rooms" :key="room._id.toString()" class="container5">
+        <div v-for="room of rooms" :key="room._id.toString()" class="reservationsContainer">
           <ReservationsListComponent
             @reservation-Deleted="reservationDeleted"
             :reservations="filterReservationsOnRoomId(room._id as ObjectId)"
@@ -118,13 +118,11 @@
             :loading="loading"
             :nameGiven="true"
           />
-        </div>
-        <div class="container6">
-          <!-- Ability to add a reservation-->
-          <!-- choose a student-->
-          <!-- choose a room-->
-          <!-- choose a date-->
-          <!-- choose a time-->
+          <div v-if="filterReservationsOnRoomId(room._id as ObjectId).length == 0">
+            <v-alert class="tertiary-color-btn" outlined>
+                <p>Er zijn geen reservaties, maak er één!</p>
+            </v-alert>
+      </div>
         </div>
       </div>
       <div v-if="showLogs && !loading" class="logs">
@@ -135,7 +133,7 @@
           :item-value="(item) => item"
           v-model="selectedLogFile"
         ></v-select>
-        <div v-if="selectedLogFile" class="container7">
+        <div v-if="selectedLogFile" class="logsContainer">
           <LogsListComponent :logFile="selectedLogFile" :loading="loading" />
         </div>
       </div>
@@ -269,11 +267,11 @@ export default {
     },
     shownContainer(): string {
       if (this.showUsers) {
-        return 'Alle Gebruikers'
+        return 'ALLE GEBRUIKERS'
       } else if (this.showReservations) {
-        return 'Alle Reservaties'
+        return 'ALLE RESERVATIES'
       } else if (this.showLogs) {
-        return 'Alle Logs'
+        return 'ALLE LOGS'
       } else {
         return ''
       }
@@ -351,6 +349,11 @@ export default {
         await this.adminService.getAllUsers().then((response) => {
           this.users = response as FullUser[]
         })
+
+        await this.reservationsService.getAllReservations().then((response) => {
+          this.reservations = response as Reservation[]
+        })
+
       } else {
         //for 2 seconds show the unsuccesfulUserCreation alert
         this.unsuccesfulUserDeletion = true
@@ -419,7 +422,7 @@ navbarComponent {
   text-align: center;
 }
 
-.container {
+.listsContainer {
   display: flex;
   justify-content: start;
   padding-top: 0px !important;
@@ -439,6 +442,15 @@ navbarComponent {
   padding-right: 2vw;
 }
 
+.reservations {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+}
+
 .logs {
   display: flex;
   flex-direction: column;
@@ -447,8 +459,20 @@ navbarComponent {
   width: 100%;
 }
 
-.container7 {
-  width: 100%;
+.logsContainer {
+  width: 90%;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding-bottom: 10px;
+}
+
+.reservationsContainer {
+  width: 90%;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .alerts {
@@ -465,5 +489,11 @@ navbarComponent {
   margin-left: 20px;
   margin-right: 20px;
   margin-top: 20px;
+}
+
+.v-select {
+  height: 100px !important;
+  width: 100%;
+  max-width: 500px;
 }
 </style>

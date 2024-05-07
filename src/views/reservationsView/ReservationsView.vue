@@ -6,7 +6,7 @@
             <v-btn class="btn primary-color-btn" @click="createReservation()" :disabled="loading">Maak Nieuwe Reservatie</v-btn>
         </div>
         <div class="headingContainer">
-            <h1>Reservaties</h1>
+            <h1>RESERVATIES</h1>
         </div>
         <div class="roomsComponentContainer">
             <RoomsComponent @loading-Started="loadingStarted" @loading-Completed="loadingCompleted" :rooms="rooms" :loading="loading"/>
