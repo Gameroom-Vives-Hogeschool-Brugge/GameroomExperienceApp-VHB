@@ -147,7 +147,7 @@ export default {
     this.reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
     this.loadReservations = false
 
-    // Check if there is a reservation within 30 minutes
+    // Refresh the reservations every minute
     const minute = 1000 * 60
     setInterval(async () => {
       this.reservations = await this.reservationsService.getReservationsByUserId(this.activeUserStore.activeUser._id)
@@ -264,6 +264,10 @@ NavBarComponent {
   width: 30% !important;
   height: 100px !important;
   min-width: 250px;
+}
+
+.v-dialog {
+  max-width: 800px !important;
 }
 
 .loadReservationsCircle{

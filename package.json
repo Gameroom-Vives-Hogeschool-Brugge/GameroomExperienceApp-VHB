@@ -18,7 +18,8 @@
     "dockerrun": "docker run -p 8080:80 gameroomexperienceapp-vhb",
     "dockercomposeup": "docker compose up -d",
     "dockercomposestop": "docker compose stop",
-    "dockercomposebuildandup": "docker compose up -d --build"
+    "dockercomposebuildandup": "docker compose up -d --build",
+    "dockercomposeappbuildandup": "docker compose up -d --build app"
   },
   "dependencies": {
     "@peculiar/webcrypto": "^1.4.5",

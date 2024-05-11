@@ -26,7 +26,7 @@
             <v-card-text class="container5">
               <!--image of person-->
               <v-avatar size="150">
-                <v-img alt="Pedro Calleeuw" src="src\assets\images\P_Calleeuw.jpeg"></v-img>
+                <img class="lectorImage" alt="Pedro Calleeuw" src="../../assets/images/P_Calleeuw.jpeg" />
               </v-avatar>
               <v-card-title>Pedro Calleeuw</v-card-title>
               <v-card-actions>
@@ -37,7 +37,7 @@
             </v-card-text>
             <v-card-text class="container5">
               <v-avatar size="150">
-                <v-img alt="Ronny Mees" src="src\assets\images\R_Mees.jpeg"></v-img>
+                <img class="lectorImage" alt="Ronny Mees" src="../../assets/images/R_Mees.jpeg" />
               </v-avatar>
               <v-card-title>Ronny Mees</v-card-title>
               <v-card-actions>
@@ -173,11 +173,20 @@ h1 {
   align-items: center;
 }
 
-.v-dialog > .v-overlay__content {
-  display: flex  !important;
-  justify-content: center !important;
-  align-items: center !important;
+.v-dialog  {
   width: 800px!important;
+}
+
+@media only screen and (max-width: 1000px) {
+  .v-dialog  {
+    width: 90%!important;
+  }
+}
+
+.lectorImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .infoBtn {

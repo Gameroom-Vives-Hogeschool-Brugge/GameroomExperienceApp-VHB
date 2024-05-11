@@ -155,6 +155,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 90vw;
 }
 
 .noMessagesDiv {
@@ -162,7 +163,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 300px;
+  width: 90vw;
 }
 
 .v-card {
