@@ -181,12 +181,9 @@ navbarComponent {
     justify-content: center;
     width: 90%;
     padding-top: 1vh;
-    padding-bottom: 5vh;
+    padding-bottom: 10px;
     border: 1px solid #e0e0e0;
     border-radius: 10px;
-}
-
-.todayReservationsContainer {
 }
 
 .otherReservationsContainer {

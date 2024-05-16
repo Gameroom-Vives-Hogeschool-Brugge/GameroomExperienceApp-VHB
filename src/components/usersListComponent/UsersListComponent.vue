@@ -22,7 +22,7 @@
         >
         <div class="buttons">
           <!-- ability to change the information of a user-->
-          <v-btn color="warning" variant="outlined" @click="editUser(user)">Aanpassen</v-btn>
+          <v-btn color="warning" variant="outlined" @click="openEditDialog(user)">Aanpassen</v-btn>
           <!-- ability to delete a user-->
           <v-btn color="error" variant="outlined" @click="openDeleteDialog(user._id)" id="deletebutton"
             >Verwijderen</v-btn
@@ -33,7 +33,7 @@
 
     <v-dialog v-model="editDialog">  
       <v-card>
-        <v-card-title class="dialogTitle">Wijzig Gebruiker</v-card-title>
+        <v-card-title class="dialogTitle">WIJZIG GEBRUIKER</v-card-title>
         <v-container>
           <v-text-field
             variant="outlined"
@@ -106,7 +106,7 @@
 
     <v-dialog v-model="deleteDialog">
       <v-card class="deleteCard">
-        <v-card-title  class="deleteTitle">Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
+        <v-card-title  class="deleteTitle">Weet u zeker dat u deze gebruiker wilt verwijderen?</v-card-title>
         <v-card-actions>
           <v-btn variant="outlined" @click="deleteDialog = false">Nee</v-btn>
           <v-btn variant="outlined" color="error" @click="deleteUser()">Ja</v-btn>
@@ -223,7 +223,12 @@ export default {
     getCourseDescription(courseId: ObjectId): string | undefined {
       return this.courses.find((course) => course._id === courseId)?.course
     },
-    editUser(user: FullUser) {
+    openDeleteDialog(userId: ObjectId) {
+      this.userToDelete = userId
+
+      this.deleteDialog = true
+    },
+    openEditDialog(user: FullUser) {
       this.userId = user._id
       this.firstName = user.firstName
       this.lastName = user.lastName
@@ -233,10 +238,12 @@ export default {
       this.type = user.type
       this.course = user.course
       this.role = user.role
+
       this.editDialog = true
     },
     deleteUser() {
       this.$emit('delete-user', this.userToDelete)
+      this.deleteDialog = false
     },
     saveUser() {
       const editedUser = {
@@ -252,12 +259,7 @@ export default {
       }
 
       this.$emit('update-editedUser', editedUser)
-
       this.editDialog = false
-    },
-    openDeleteDialog(userId: ObjectId) {
-      this.deleteDialog = true
-      this.userToDelete = userId
     },
   }
 }
@@ -348,12 +350,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: start;
-  max-width: 900px;
-  padding: 5px;
+  max-width: 500px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .deleteTitle {
-  text-align: center;
-  word-break: break-word;
+  white-space: normal;
 }
 </style>

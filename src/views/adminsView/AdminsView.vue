@@ -447,7 +447,8 @@ navbarComponent {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  max-width: 80vw;
+  min-width: 60vw;
 
 }
 
@@ -472,7 +473,7 @@ navbarComponent {
   border-radius: 10px;
   margin-bottom: 10px;
   padding-top: 5px;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
 }
 
 .alerts {

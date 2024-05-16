@@ -1,4 +1,5 @@
 <template>
+  <!-- This is for desktop devices-->
   <v-window v-model="window" show-arrows v-if="!loading && screenwidth > 1250">
     <v-window-item v-for="room in rooms" :key="room._id.toString()">
       <v-card class="d-flex justify-center align-center flex-column">
@@ -75,7 +76,7 @@
                       :key="reservation._id.toString()"
                     >
                       <v-list-item-title
-                        >Persoon: {{ reservation.user.firstName }}
+                        >{{ reservation.user.firstName }}
                         {{ reservation.user.lastName }}</v-list-item-title
                       >
                       <v-list-item-subtitle
@@ -115,6 +116,7 @@
     </v-window-item>
   </v-window>
 
+  <!-- This is for mobile devices-->
   <div class="roomDiv" v-if="!loading && screenwidth < 1250">
     <v-select
       label="Select"
@@ -183,7 +185,7 @@
                   :key="reservation._id.toString()"
                 >
                   <v-list-item-title
-                    >Persoon: {{ reservation.user.firstName }}
+                    >{{ reservation.user.firstName }}
                     {{ reservation.user.lastName }}</v-list-item-title
                   >
                   <v-list-item-subtitle
@@ -232,11 +234,14 @@
     </v-list>
   </div>
 
+  <!-- Loading overlay -->
   <div v-if="loading" class="overlayContainer">
     <v-overlay v-model="showLoadIcon" class="align-center justify-center" contained>
       <v-progress-circular color="error" size="128" indeterminate></v-progress-circular>
     </v-overlay>
   </div>
+
+  <!-- New Reservation Dialog -->
   <div v-if="dialog" class="dialogContainer">
     <v-dialog v-model="dialog" max-width="500">
       <NewReservationComponent
@@ -248,13 +253,15 @@
       />
     </v-dialog>
   </div>
-  <div v-if="deleteDialog" class="dialogContainer">
-    <v-dialog v-model="deleteDialog" max-width="500">
-      <v-card>
-        <v-card-title>Are you sure you want to delete this reservation?</v-card-title>
+
+  <!-- Delete a Reservation Dialog -->
+  <div v-if="deleteDialog" class="deleteDialogContainer">
+    <v-dialog v-model="deleteDialog" class="deleteDialog">
+      <v-card class="deleteCard">
+        <v-card-title class="deleteTitle">Weet u zeker dat u deze reservatie wilt verwijderen?</v-card-title>
         <v-card-actions>
-          <v-btn @click="deleteDialog = false">Cancel</v-btn>
-          <v-btn @click="deleteReservation()">Delete</v-btn>
+          <v-btn variant="outlined" @click="deleteDialog = false">Nee</v-btn>
+          <v-btn variant="outlined" color="error" @click="deleteReservation()">Verwijder</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -553,6 +560,7 @@ export default {
 </script>
 
 <style scoped>
+
 table {
   margin-bottom: 20px;
   display: block;
@@ -594,6 +602,10 @@ table {
   font-size: medium;
 }
 
+.tooltip {
+  background-color: #424242;
+}
+
 .dialogContainer {
   width: 100vw !important;
   height: 100vh !important;
@@ -604,8 +616,22 @@ table {
   z-index: 1;
 }
 
-.tooltip {
-  background-color: #424242;
+.deleteDialog {
+  width: 90vw !important;
+  max-width: 500px !important;
+}
+
+.deleteCard {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  max-width: 500px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.deleteTitle {
+  white-space: normal;
 }
 
 .deleteButton {

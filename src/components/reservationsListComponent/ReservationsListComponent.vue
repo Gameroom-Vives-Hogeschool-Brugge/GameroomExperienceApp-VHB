@@ -3,7 +3,7 @@
     <h2>{{ title }}</h2>
     <v-list v-if="!loading" class="listContainer">
       <v-list-item v-for="reservation in reservations" :key="reservation._id.toString()">
-        <v-card max-width="344" max-height="150" hover variant="outlined">
+        <v-card max-width="344" max-height="150" hover variant="outlined" class="listCard">
           <v-card-item>
             <v-card-title> {{ reservation.room.description }} </v-card-title>
             <v-card-subtitle v-if="nameGiven">
@@ -15,7 +15,7 @@
             <v-card-subtitle>
               Eindtijd: {{ formatDate(calculatEndTime(reservation)) }}
             </v-card-subtitle>
-            <v-card-actions>
+            <v-card-actions class="listActions">
               <v-btn 
                 color="error" 
                 variant="outlined"
@@ -28,13 +28,14 @@
         </v-card>
       </v-list-item>
     </v-list>
+    
     <div v-if="loading" class="overlayContainer">
       <v-overlay v-model="showLoadIcon" class="align-center justify-center" contained>
         <v-progress-circular color="error" size="128" indeterminate></v-progress-circular>
       </v-overlay>
     </div>
 
-    <v-dialog v-model="deleteDialog">
+    <v-dialog v-model="deleteDialog" class="deleteDialog">
       <v-card class="deleteCard">
         <v-card-title  class="deleteTitle">Weet u zeker dat u deze reservering wilt annuleren?</v-card-title>
         <v-card-actions>
@@ -164,6 +165,14 @@ export default {
   flex-basis: 21%;
 }
 
+.listCard {
+  max-height: 200px !important;
+}
+
+.listActions {
+  padding-bottom: 5px!important;
+}
+
 .overlayContainer {
   min-height: 200px;
   position: relative;
@@ -171,33 +180,23 @@ export default {
   justify-content: center;
 }
 
-.v-dialog > .v-overlay__content{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  justify-content: center;
+.deleteDialog {
   max-width: 500px;
-  width: 80%;
+  width: 90vw;
 }
 
 .deleteCard {
   display: flex;
   flex-direction: column;
   align-items: start;
-  max-width: 900px;
-  padding: 5px;
-}
-
-.v-card {
-  max-height: 200px !important;
-}
-
-.v-card-actions {
-  padding-bottom: 5px!important;
+  max-width: 500px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .deleteTitle {
-  text-align: center;
-  word-break: break-word;
+  white-space: normal;
 }
+
+
 </style>
