@@ -216,7 +216,6 @@ NavBarComponent {
 .header {
   display: flex;
   justify-content: center;
-
   padding-top: 15vh;
 }
 
@@ -246,10 +245,9 @@ NavBarComponent {
 }
 
 .container2 {
-  height: 65%;
+  height: 100%;
   justify-content: space-evenly;
   flex-wrap: wrap;
-  margin-bottom: 5vh;
 }
 
 .buttonContainer {
@@ -276,27 +274,6 @@ NavBarComponent {
   left: 5px;
 }
 
-@media (max-width: 1200px) {
-  .container {
-    margin-top: 0vh;
-  }
-
-  .v-btn--size-default {
-    height: 80px !important;
-  }
-}
-
-@media (max-width: 800px) {
-  .container1,
-  .container2,
-  .container3 {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 600px) {
-}
-
 .v-card-title,
 .v-card-text,
 .v-card-actions {
@@ -316,5 +293,28 @@ NavBarComponent {
   height: 50px !important;
   width: 80%;
   min-width: 250px;
+}
+
+@media (max-width: 1200px) {
+  .container {
+    margin-top: 0vh;
+  }
+}
+
+@media (max-width: 800px) {
+
+  .container {
+    padding-bottom: 5vh;
+  }
+
+  .container1,
+  .container2,
+  .container3 {
+    flex-direction: column;
+  }
+
+  .v-btn--size-default {
+    height: 80px !important;
+  }
 }
 </style>

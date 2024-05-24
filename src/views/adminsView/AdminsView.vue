@@ -95,18 +95,6 @@
             :courses="courses"
           />
         </div>
-        <div v-if="createUserToggle" class="container4">
-          <v-dialog v-model="createUserToggle">
-            <CreateUserComponent
-              @close-dialog="closeDialog"
-              @create-user="createUser"
-              :createUserToggle="createUserToggle"
-              :types="types"
-              :roles="roles"
-              :courses="courses"
-            />
-          </v-dialog>
-        </div>
       </div>
       <div v-if="showReservations" class="reservations">
         <div v-for="room of rooms" :key="room._id.toString()" class="reservationsContainer">
@@ -138,6 +126,20 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="createUserToggle" class="container4" >
+    <v-dialog v-model="createUserToggle" scrollable scroll-strategy="reposition">
+      <CreateUserComponent
+        @close-dialog="closeDialog"
+        @create-user="createUser"
+        :createUserToggle="createUserToggle"
+        :types="types"
+        :roles="roles"
+        :courses="courses"
+        close-on-content-click="!isSmallScreen()"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -379,6 +381,9 @@ export default {
         await new Promise((resolve) => setTimeout(resolve, 2000))
         this.unsuccesfulUserSaving = false
       }
+    },
+    isSmallScreen() {
+      return window.innerWidth < 800
     }
   }
 }
@@ -496,5 +501,26 @@ navbarComponent {
   height: 100px !important;
   width: 100%;
   max-width: 500px;
+}
+
+@media screen and (max-width: 800px){
+  #navBar {
+    height: 9vh !important;
+  }
+
+  .mainContainer {
+    margin-top: 10vh !important;
+  }
+
+  .buttonContainer {
+    height: 15vh;
+  }
+
+  .headerContainer {
+    height: 15vh;
+  }
+
+  .container4 {
+  }
 }
 </style>

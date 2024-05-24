@@ -20,7 +20,7 @@
         <v-list-item-subtitle
           ><strong>Rol: </strong>{{ getRoleDescription(user.role) }}</v-list-item-subtitle
         >
-        <div class="buttons">
+        <div class="userButtons">
           <!-- ability to change the information of a user-->
           <v-btn color="warning" variant="outlined" @click="openEditDialog(user)">Aanpassen</v-btn>
           <!-- ability to delete a user-->
@@ -148,7 +148,7 @@ export default {
     courses: {
       type: Array as () => UserCourse[],
       required: true
-    }
+    },
   },
   emits: ['delete-user', 'update-editedUser'],
   setup() {
@@ -283,6 +283,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: start;
+  width: 90vw;
 }
 .header {
   display: flex;
@@ -290,7 +291,7 @@ export default {
   text-align: center;
 }
 
-.buttons {
+.userButtons {
   margin-top: 10px;
   padding-bottom: 5px;
 }
@@ -334,8 +335,7 @@ export default {
 
 .v-list-item {
   margin-top: 5px;
-  width: 40vw;
-  min-width: 400px;
+  max-width: 40vw;
   max-width: 500px;
   border: 1px solid black;
   border-radius: 5px;
@@ -344,6 +344,9 @@ export default {
 
 .v-list-item-subtitle {
   margin-top: 3px;
+  word-wrap: break-word;
+  white-space: normal;
+  text-overflow: ellipsis;
 }
 
 .deleteCard {
@@ -357,5 +360,28 @@ export default {
 
 .deleteTitle {
   white-space: normal;
+}
+
+@media screen and (max-width: 800px) {
+  #deletebutton {
+    margin-left: 0px;
+  }
+
+  .usersContainer {
+    width: 100%;
+  }
+  
+  .v-list-item {
+    min-width: 300px;
+  }
+
+  .userButtons {
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    justify-content: space-evenly;
+  }
+
+  
 }
 </style>

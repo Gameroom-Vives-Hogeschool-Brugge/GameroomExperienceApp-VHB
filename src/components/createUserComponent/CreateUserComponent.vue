@@ -2,74 +2,150 @@
   <div class="createUserContainer">
     <v-card>
         <v-card-title class="dialogTitle">Nieuwe Gebruiker</v-card-title>
-        <v-container>
+        <div v-if="isSmallScreen">
           <v-text-field
-            variant="outlined"
-            v-model="user.firstName"
-            label="Voornaam"
-            type="input"
-            :rules="rules"
-            color="black"
-          ></v-text-field>
+          variant="outlined"
+          v-model="user.firstName"
+          label="Voornaam"
+          type="input"
+          :rules="rules"
+          color="black"
+          density="compact"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.lastName"
+          label="Achternaam"
+          type="input"
+          :rules="rules"
+          density="compact"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.idNumber"
+          label="Id Nummer"
+          type="input"
+          :rules="rules"
+          density="compact"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.cardNumber"
+          label="Kaart Nummer"
+          type="input"
+          :rules="rules"
+          density="compact"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.email"
+          label="Email"
+          type="input"
+          :rules="isEmailAdress"
+          density="compact"
+        ></v-text-field>
+        <v-select
+          variant="outlined"
+          v-model="user.type"
+          :items="types"
+          :item-title="(type) => type.type"
+          :item-value="(type) => type._id"
+          @update:modelValue="user.role = shownRoles[0]._id; user.course = shownCourses[0]._id"
+          label="Type"
+          required
+          density="comfortable"
+        ></v-select>
+        <v-select
+          variant="outlined"
+          v-model="user.role"
+          :items="shownRoles"
+          :item-title="(role) => role.role"
+          :item-value="(role) => role._id"
+          @update:modelValue="user.course = shownCourses[0]._id; user.type = types[0]._id"
+          label="Rol"
+          required
+          density="comfortable"
+        ></v-select>
+        <v-select
+          variant="outlined"
+          v-model="user.course"
+          :items="shownCourses"
+          :item-title="(course) => course.course"
+          :item-value="(course) => course._id"
+          @update:modelValue="user.role = shownRoles[0]._id; user.type = types[0]._id"
+          label="Opleiding"
+          required
+          density="comfortable"
+        ></v-select>
+        </div>
+        <div v-else>
           <v-text-field
-            variant="outlined"
-            v-model="user.lastName"
-            label="Achternaam"
-            type="input"
-            :rules="rules"
-          ></v-text-field>
-          <v-text-field
-            variant="outlined"
-            v-model="user.idNumber"
-            label="Id Nummer"
-            type="input"
-            :rules="rules"
-          ></v-text-field>
-          <v-text-field
-            variant="outlined"
-            v-model="user.cardNumber"
-            label="Kaart Nummer"
-            type="input"
-            :rules="rules"
-          ></v-text-field>
-          <v-text-field
-            variant="outlined"
-            v-model="user.email"
-            label="Email"
-            type="input"
-            :rules="isEmailAdress"
-          ></v-text-field>
-          <v-select
-            variant="outlined"
-            v-model="user.type"
-            :items="types"
-            :item-title="(type) => type.type"
-            :item-value="(type) => type._id"
-            @update:modelValue="user.role = shownRoles[0]._id; user.course = shownCourses[0]._id"
-            label="Type"
-            required
-          ></v-select>
-          <v-select
-            variant="outlined"
-            v-model="user.role"
-            :items="shownRoles"
-            :item-title="(role) => role.role"
-            :item-value="(role) => role._id"
-            @update:modelValue="user.course = shownCourses[0]._id; user.type = types[0]._id"
-            label="Rol"
-            required
-          ></v-select>
-          <v-select
-            variant="outlined"
-            v-model="user.course"
-            :items="shownCourses"
-            :item-title="(course) => course.course"
-            :item-value="(course) => course._id"
-            @update:modelValue="user.role = shownRoles[0]._id; user.type = types[0]._id"
-            label="Opleiding"
-            required
-          ></v-select>
-        </v-container>
+          variant="outlined"
+          v-model="user.firstName"
+          label="Voornaam"
+          type="input"
+          :rules="rules"
+          color="black"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.lastName"
+          label="Achternaam"
+          type="input"
+          :rules="rules"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.idNumber"
+          label="Id Nummer"
+          type="input"
+          :rules="rules"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.cardNumber"
+          label="Kaart Nummer"
+          type="input"
+          :rules="rules"
+        ></v-text-field>
+        <v-text-field
+          variant="outlined"
+          v-model="user.email"
+          label="Email"
+          type="input"
+          :rules="isEmailAdress"
+        ></v-text-field>
+        <v-select
+          variant="outlined"
+          v-model="user.type"
+          :items="types"
+          :item-title="(type) => type.type"
+          :item-value="(type) => type._id"
+          @update:modelValue="user.role = shownRoles[0]._id; user.course = shownCourses[0]._id"
+          label="Type"
+          required
+        ></v-select>
+        <v-select
+          variant="outlined"
+          v-model="user.role"
+          :items="shownRoles"
+          :item-title="(role) => role.role"
+          :item-value="(role) => role._id"
+          @update:modelValue="user.course = shownCourses[0]._id; user.type = types[0]._id"
+          label="Rol"
+          required
+        ></v-select>
+        <v-select
+          variant="outlined"
+          v-model="user.course"
+          :items="shownCourses"
+          :item-title="(course) => course.course"
+          :item-value="(course) => course._id"
+          @update:modelValue="user.role = shownRoles[0]._id; user.type = types[0]._id"
+          label="Opleiding"
+          required
+        ></v-select>
+        </div>
         <v-card-actions class="dialogButtons">
           <v-btn variant="outlined" @click="closeDialog()">Sluiten</v-btn>
           <v-btn variant="outlined" @click="createUser()" :disabled="!formisValid" color="success">Opslaan</v-btn>
@@ -200,7 +276,10 @@ export default {
     formisValid() {
       //check if all fields are filled in and all the rules are met
       return this.user.firstName && this.user.lastName && this.user.idNumber && this.user.cardNumber && this.user.email && this.user.type && this.user.role && this.user.course
-
+    },
+    isSmallScreen() {
+      //check if the screen is smaller than 800px
+      return window.innerWidth < 800
     }
   }
 }
@@ -212,7 +291,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
 }
 
 .v-card {
@@ -232,7 +310,8 @@ export default {
 }
 
 .v-input {
-  width: 90% !important;
+  width: 100% !important;
+  min-width: 300px;
 }
 
 .dialogTitle {
@@ -243,5 +322,26 @@ export default {
 
 .dialogButtons {
     margin-bottom: 10px;
+}
+
+@media screen and (max-width: 800px) {
+  .v-card {
+    width: 100%;
+  }
+
+  .dialogTitle {
+    margin-bottom: 0px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+  .dialogButtons {
+    margin-bottom: 0px;
+}
+
+.v-input__details {
+  height: 0px;
+}
+
 }
 </style>
